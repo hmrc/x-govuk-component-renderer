@@ -1,8 +1,19 @@
+Here’s the extensive documentation for the API:
 
-# template-service-spike
+`POST` to `/govuk/v3.2.0/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend e.g. `govukSelect`, `govukButton`, `govukHeader`
 
-This is a placeholder README.md for a new repository
+The request body should contain JSON (therefore a `content-type: application/json` on the request) containing the parameters for the component.  For example:
 
-### License
+Posting to `/govuk/v3.2.0/components/govukButton` with a body of `{"text": "Save and continue"}` would return the HTML:
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+```
+<button class="govuk-button" data-module="govuk-button">
+  Save and continue
+</button>
+```
+
+This is currently hosted at https://template-service-spike.herokuapp.com
+
+Limitations for the current phase:
+ - Only version 3.2.0 of govuk-frontend is supported, supporting a different version is easy but supporting multiple versions simultaniously would require some work
+ - We don't currently support `caller` blocks being fed in

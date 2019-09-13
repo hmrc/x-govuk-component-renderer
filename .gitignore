@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 logs
 project/project
@@ -23,3 +24,6 @@ yarn-debug.log
 yarn-error.log
 
     
+=======
+node_modules
+>>>>>>> 0525bda... Initial Commit.
