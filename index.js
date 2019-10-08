@@ -28,7 +28,7 @@ router.get('/', (req, res) => {
   })
 })
 
-router.post('/govuk/v3.2.0/components/:component', jsonParser, (req, res) => {
+router.post('/govuk/v3.3.0/components/:component', jsonParser, (req, res) => {
   const {
     body = {},
     params: { component }

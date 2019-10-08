@@ -13,7 +13,7 @@ describe("Templates as a service... again!", () => {
 </button>`
 
     return request(app)
-      .post("/govuk/v3.2.0/components/govukButton")
+      .post("/govuk/v3.3.0/components/govukButton")
       .send({ text: "Save and continue" })
       .expect(200)
       .then(response => {
@@ -27,7 +27,7 @@ describe("Templates as a service... again!", () => {
 </button>`
 
     return request(app)
-      .post("/govuk/v3.2.0/components/govukButton")
+      .post("/govuk/v3.3.0/components/govukButton")
       .send({ text: "I Waz 'ere" })
       .expect(200)
       .then(response => {
@@ -79,7 +79,7 @@ describe("Templates as a service... again!", () => {
 </div>`
 
     return request(app)
-      .post("/govuk/v3.2.0/components/govukDateInput")
+      .post("/govuk/v3.3.0/components/govukDateInput")
       .send({
         fieldset: {
           legend: {
@@ -162,7 +162,7 @@ describe("Templates as a service... again!", () => {
 `
 
     return request(app)
-      .post("/govuk/v3.2.0/components/govukFooter")
+      .post("/govuk/v3.3.0/components/govukFooter")
       .send()
       .expect(200)
       .then(response => {
