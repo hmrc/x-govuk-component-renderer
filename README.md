@@ -15,5 +15,5 @@ Posting to `/govuk/v3.2.0/components/govukButton` with a body of `{"text": "Save
 This is currently hosted at https://template-service-spike.herokuapp.com
 
 Limitations for the current phase:
- - Only version 3.2.0 of govuk-frontend is supported, supporting a different version is easy but supporting multiple versions simultaniously would require some work
+ - Only version 3.3.0 of govuk-frontend is supported, supporting a different version is easy but supporting multiple versions simultaniously would require some work
  - We don't currently support `caller` blocks being fed in
