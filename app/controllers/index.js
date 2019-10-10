@@ -11,11 +11,12 @@ const {
 
 const {
   dsComponentRoot,
+  readMe,
   substitutionMap
 } = require('../../constants')
 
 const rootController = (req, res) => {
-  fs.readFile('../../README.md', 'utf8', (err, contents) => {
+  fs.readFile(readMe, 'utf8', (err, contents) => {
     if (err) {
       res.status(500).send('Could not display README, please check github instead.')
     } else {
@@ -39,7 +40,6 @@ const examplesController = (req, res) => {
     })
     
     Promise.all(output).then(result => {
-      console.log(result)
       res.send(result)
     })
   } catch (err) {

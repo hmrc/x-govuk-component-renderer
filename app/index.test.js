@@ -1,4 +1,9 @@
 const request = require("supertest")
+const fs = require('fs')
+const marked = require('marked')
+
+const { readMe } = require('../constants')
+
 const app = require("./")
 
 expectHtmlToMatch = (expected, actual) => {
@@ -7,36 +12,38 @@ expectHtmlToMatch = (expected, actual) => {
 }
 
 describe("Templates as a service... again!", () => {
-  it("should return a govukbutton", () => {
-    const expected = `<button class="govuk-button" data-module="govuk-button">
+
+  describe('/govuk/v3.3.0/components/:component', () => {
+    it("should return a govukbutton", () => {
+      const expected = `<button class="govuk-button" data-module="govuk-button">
   Save and continue
 </button>`
 
-    return request(app)
-      .post("/govuk/v3.3.0/components/govukButton")
-      .send({ text: "Save and continue" })
-      .expect(200)
-      .then(response => {
-        expect(response.text).toBe(expected)
-      })
-  })
+      return request(app)
+        .post("/govuk/v3.3.0/components/govukButton")
+        .send({ text: "Save and continue" })
+        .expect(200)
+        .then(response => {
+          expect(response.text).toBe(expected)
+        })
+    })
 
-  it("should return the text I provided", () => {
-    const expected = `<button class="govuk-button" data-module="govuk-button">
+    it("should return the text I provided", () => {
+      const expected = `<button class="govuk-button" data-module="govuk-button">
   I Waz &#39;ere
 </button>`
 
-    return request(app)
-      .post("/govuk/v3.3.0/components/govukButton")
-      .send({ text: "I Waz 'ere" })
-      .expect(200)
-      .then(response => {
-        expect(response.text).toBe(expected)
-      })
-  })
+      return request(app)
+        .post("/govuk/v3.3.0/components/govukButton")
+        .send({ text: "I Waz 'ere" })
+        .expect(200)
+        .then(response => {
+          expect(response.text).toBe(expected)
+        })
+    })
 
-  it("should support a complex component", () => {
-    const expected = `<div class="govuk-form-group govuk-form-group--error">
+    it("should support a complex component", () => {
+      const expected = `<div class="govuk-form-group govuk-form-group--error">
 <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint passport-issued-error">
   <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
     <h1 class="govuk-fieldset__heading">
@@ -78,50 +85,50 @@ describe("Templates as a service... again!", () => {
 </fieldset>
 </div>`
 
-    return request(app)
-      .post("/govuk/v3.3.0/components/govukDateInput")
-      .send({
-        fieldset: {
-          legend: {
-            text: "When was your passport issued?",
-            isPageHeading: true,
-            classes: "govuk-fieldset__legend--xl"
-          }
-        },
-        hint: {
-          text: "For example, 12 11 2007"
-        },
-        errorMessage: {
-          text: "The date your passport was issued must be in the past"
-        },
-        id: "passport-issued",
-        namePrefix: "passport-issued",
-        items: [
-          {
-            classes: "govuk-input--width-2 govuk-input--error",
-            name: "day",
-            value: "6"
+      return request(app)
+        .post("/govuk/v3.3.0/components/govukDateInput")
+        .send({
+          fieldset: {
+            legend: {
+              text: "When was your passport issued?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--xl"
+            }
           },
-          {
-            classes: "govuk-input--width-2 govuk-input--error",
-            name: "month",
-            value: "3"
+          hint: {
+            text: "For example, 12 11 2007"
           },
-          {
-            classes: "govuk-input--width-4 govuk-input--error",
-            name: "year",
-            value: "2076"
-          }
-        ]
-      })
-      .expect(200)
-      .then(response => {
-        expectHtmlToMatch(response.text, expected)
-      })
-  })
+          errorMessage: {
+            text: "The date your passport was issued must be in the past"
+          },
+          id: "passport-issued",
+          namePrefix: "passport-issued",
+          items: [
+            {
+              classes: "govuk-input--width-2 govuk-input--error",
+              name: "day",
+              value: "6"
+            },
+            {
+              classes: "govuk-input--width-2 govuk-input--error",
+              name: "month",
+              value: "3"
+            },
+            {
+              classes: "govuk-input--width-4 govuk-input--error",
+              name: "year",
+              value: "2076"
+            }
+          ]
+        })
+        .expect(200)
+        .then(response => {
+          expectHtmlToMatch(response.text, expected)
+        })
+    })
 
-  it("should render without parameters when none are provided", () => {
-    const expected = `<footer class="govuk-footer " role="contentinfo">
+    it("should render without parameters when none are provided", () => {
+      const expected = `<footer class="govuk-footer " role="contentinfo">
   <div class="govuk-width-container ">
 
     <div class="govuk-footer__meta">
@@ -161,12 +168,93 @@ describe("Templates as a service... again!", () => {
 </footer>
 `
 
-    return request(app)
-      .post("/govuk/v3.3.0/components/govukFooter")
-      .send()
-      .expect(200)
-      .then(response => {
-        expectHtmlToMatch(response.text, expected)
-      })
+      return request(app)
+        .post("/govuk/v3.3.0/components/govukFooter")
+        .send()
+        .expect(200)
+        .then(response => {
+          expectHtmlToMatch(response.text, expected)
+        })
+    })
   })
+
+  describe('/examples-output/:component', () => {
+    const expected = [
+      {
+        html: `<div class=\"govuk-form-group\">
+  <label class=\"govuk-label\" for=\"file-upload-1\">
+    Upload a file
+  </label>
+  <input class=\"govuk-file-upload\" id=\"file-upload-1\" name=\"file-upload-1\" type=\"file\">
+</div>`,
+        md5: '7a23adc1045d2b75bde07ef81d61c469',
+        name: 'file-upload/default',
+      },
+      {
+        html: `<div class=\"govuk-form-group govuk-form-group--error\">
+  <label class=\"govuk-label\" for=\"file-upload-1\">
+    Upload a file
+  </label>
+  <span id=\"file-upload-1-error\" class=\"govuk-error-message\">
+  <span class=\"govuk-visually-hidden\">Error:</span> The CSV must be smaller than 2MB
+  </span>
+  <input class=\"govuk-file-upload govuk-file-upload--error\" id=\"file-upload-1\" name=\"file-upload-1\" type=\"file\" aria-describedby=\"file-upload-1-error\">
+</div>`,
+        md5: '62ed65b2964b40280c34d3912f1786e5',
+        name: 'file-upload/error',
+      }
+    ]
+
+    it('should return an array of examples with markup and md5 hash', (done) => {
+      return request(app)
+        .get("/examples-output/file-upload")
+        .expect(200)
+        .then(response => {
+          expect(response.body).toEqual(expected)
+          done()
+        })
+    })
+    
+    it('should work if the request uses the macro name', (done) => {
+      return request(app)
+        .get("/examples-output/govukFileUpload")
+        .expect(200)
+        .then(response => {
+          expect(response.body).toEqual(expected)
+          done()
+        })
+    })
+
+    it('should return a 500 if requested component does not exist', () => {
+      return request(app)
+        .get("/examples-output/foo")
+        .expect(500)
+    })
+  })
+
+  describe('/', () => {
+    it('should return rendered markdown of README.md', (done) => {
+      let expected
+      fs.readFile(readMe, 'utf8', (err, contents) => {
+        expected = marked(contents)
+      })
+
+      return request(app)
+        .get("/")
+        .expect(200)
+        .then(response => {
+          expect(response.text).toEqual(expected)
+          done()
+        })
+    })
+  })
+
+  describe('/invalid-path', () => {
+    it('should return a 404', () => {
+      return request(app)
+        .get("/invalid-path")
+        .expect(404)
+    })
+  })
+
 })
