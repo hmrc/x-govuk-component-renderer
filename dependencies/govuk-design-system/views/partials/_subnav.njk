@@ -1,0 +1,33 @@
+<nav class="app-subnav">
+    {% for item in navigation %}
+      {% if path.startsWith(item.url) %}
+      {% if item.items %}
+        {% for theme, items in item.items | groupby("theme") %}
+          {% if theme != 'undefined' %}
+            <h4 class="app-subnav__theme">{{ theme }}</h4>
+          {% endif %}
+          <ul class="app-subnav__section">
+          {% for subitem in items %}
+            <li class="app-subnav__section-item{% if subitem.url == path %} app-subnav__section-item--current{% endif %}">
+              <a class="app-subnav__link govuk-link govuk-link--no-visited-state" href="/{{ subitem.url }}/">{{ subitem.label }}</a>
+              {% if (subitem.headings) and (subitem.url == path) %}
+                <ul class="app-subnav__section app-subnav__section--nested">
+                  {% for link in subitem.headings %}
+                    {% if link.depth == 2 %}
+                      <li class="app-subnav__section-item">
+                        <a class="app-subnav__link govuk-link govuk-link--no-visited-state" href="/{{ subitem.url }}/#{{ link.url }}" >
+                          {{ link.text }}
+                        </a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
+          </ul>
+        {% endfor %}
+      {% endif %}
+      {% endif %}
+    {% endfor %}
+</nav>

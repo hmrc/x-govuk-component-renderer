@@ -1,0 +1,10 @@
+---
+title: Back link
+layout: layout-example.njk
+---
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{{ govukBackLink({
+  text: "Back",
+  href: "#"
+}) }}
