@@ -1,11 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
-const {
-    rootController,
-    examplesController,
-    componentController
-} = require('../controllers')
+const rootController = require('../controllers/rootController')
+const examplesController = require('../controllers/examplesController')
+const componentController = require('../controllers/componentController')
 
 const router = express.Router()
 const jsonParser = bodyParser.json()
