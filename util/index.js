@@ -10,17 +10,18 @@ const getDirectories = source => fs.readdirSync(source, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name)
 
-const getHtmlFromFile = (file, meta) => new Promise((resolve, reject) => {
+const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
   fs.readFile(file, 'utf8', (err, contents) => {
     if (err) {
       reject(err)
     } else {
-      const raw = matter(contents).content
-      const html = nunjucks.renderString(raw).trim()
+      const nj = matter(contents).content
+      const html = nunjucks.renderString(nj).trim()
       resolve({
         ...meta,
         html,
-        md5: md5(html)
+        md5: md5(html),
+        nunjucks: nj.trim(),
       })
     }
   })
@@ -28,6 +29,6 @@ const getHtmlFromFile = (file, meta) => new Promise((resolve, reject) => {
 
 module.exports = {
     getComponentIdentifier,
-    getDirectories,
-    getHtmlFromFile
+    getDataFromFile,
+    getDirectories
 }

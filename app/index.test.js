@@ -189,6 +189,15 @@ describe("Templates as a service... again!", () => {
 </div>`,
         md5: '7a23adc1045d2b75bde07ef81d61c469',
         name: 'file-upload/default',
+        nunjucks: `{% from \"govuk/components/file-upload/macro.njk\" import govukFileUpload %}
+
+{{ govukFileUpload({
+  id: \"file-upload-1\",
+  name: \"file-upload-1\",
+  label: {
+    text: \"Upload a file\"
+  }
+}) }}`,
       },
       {
         html: `<div class=\"govuk-form-group govuk-form-group--error\">
@@ -202,6 +211,18 @@ describe("Templates as a service... again!", () => {
 </div>`,
         md5: '62ed65b2964b40280c34d3912f1786e5',
         name: 'file-upload/error',
+        nunjucks: `{% from \"govuk/components/file-upload/macro.njk\" import govukFileUpload %}
+
+{{ govukFileUpload({
+  id: \"file-upload-1\",
+  name: \"file-upload-1\",
+  label: {
+    text: \"Upload a file\"
+  },
+  errorMessage: {
+    text: \"The CSV must be smaller than 2MB\"
+  }
+}) }}`,
       }
     ]
 

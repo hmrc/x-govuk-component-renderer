@@ -25,9 +25,10 @@ The response structure is as follows:
 `
   [
     {
-      name: '<component_id>/<example_id>',
       html: '<div>some markup</div>',
-      md5: '<an_md5_hash>'
+      md5: '<an_md5_hash>',
+      name: '<component_id>/<example_id>',
+      nunjucks: '{% some Nunjucks %}'
     }
   ]
 `
