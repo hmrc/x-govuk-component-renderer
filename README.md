@@ -2,7 +2,7 @@
 
 ### 1.
 
-`POST` to `/govuk/v3.2.0/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend e.g. `govukSelect`, `govukButton`, `govukHeader`
+`POST` to `/govuk/v3.3.0/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend e.g. `govukSelect`, `govukButton`, `govukHeader`
 
 The request body should contain JSON (therefore a `content-type: application/json` on the request) containing the parameters for the component.  For example:
 
