@@ -2,8 +2,8 @@ const path = require('path')
 
 const {
   getComponentIdentifier,
-  getDirectories,
-  getHtmlFromFile
+  getDataFromFile,
+  getDirectories
 } = require('../../util')
 
 const {
@@ -20,7 +20,7 @@ module.exports = (req, res) => {
     const examples = getDirectories(path.resolve(__dirname, componentPath))
     const output = []
     examples.forEach(example => {
-      output.push(getHtmlFromFile(`${componentPath}/${example}/index.njk`, {
+      output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, {
         name: `${componentIdentifier}/${example}`
       }))
     })
