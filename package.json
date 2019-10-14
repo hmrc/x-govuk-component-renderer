@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "./getDependencies.sh"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +14,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "govuk-frontend": "^3.3.0",
+    "gray-matter": "^4.0.2",
     "hmrc-frontend": "^1.2.0",
     "marked": "^0.7.0",
     "nunjucks": "^3.2.0"
@@ -20,5 +22,11 @@
   "devDependencies": {
     "jest": "^24.9.0",
     "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "./dependencies/*",
+      "./node_modules/*"
+    ]
   }
 }
