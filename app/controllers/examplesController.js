@@ -19,6 +19,7 @@ module.exports = (req, res) => {
   try {
     const examples = getDirectories(path.resolve(__dirname, componentPath))
     const output = []
+    console.log(examples)
     examples.forEach(example => {
       output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, {
         name: `${componentIdentifier}/${example}`
