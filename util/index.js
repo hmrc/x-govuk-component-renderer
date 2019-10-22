@@ -52,6 +52,9 @@ const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
 })
 
 const getGovukFrontend = async (version) => {
+  // TODO:
+  // this is fragile as it will be broken by a version range or any other npm semver
+  // operator such as >, <= etc...
   const trimmedVersion = version
     .replace('v', '')
     .replace('^', '')
