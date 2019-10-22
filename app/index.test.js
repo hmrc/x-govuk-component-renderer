@@ -13,6 +13,22 @@ expectHtmlToMatch = (expected, actual) => {
 
 describe("Templates as a service... again!", () => {
 
+  describe('/govuk/v3.0.0/components/:component', () => {
+    it("should return an older version of govukbutton", () => {
+      const expected = `<button type="submit" class="govuk-button" data-module="govuk-button">
+  Button from an older version
+</button>`
+
+      return request(app)
+        .post("/govuk/v3.0.0/components/govukButton")
+        .send({ text: "Button from an older version" })
+        .expect(200)
+        .then(response => {
+          expect(response.text).toBe(expected)
+        })
+    })
+  })
+
   describe('/govuk/v3.3.0/components/:component', () => {
     it("should return a govukbutton", () => {
       const expected = `<button class="govuk-button" data-module="govuk-button">
