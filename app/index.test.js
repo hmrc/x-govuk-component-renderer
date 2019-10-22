@@ -12,8 +12,7 @@ expectHtmlToMatch = (expected, actual) => {
 }
 
 describe("Templates as a service... again!", () => {
-
-  describe('/govuk/v3.0.0/components/:component', () => {
+  describe('/govuk/:version/components/:component', () => {
     it("should return an older version of govukbutton", () => {
       const expected = `<button type="submit" class="govuk-button" data-module="govuk-button">
   Button from an older version
@@ -27,9 +26,7 @@ describe("Templates as a service... again!", () => {
           expect(response.text).toBe(expected)
         })
     })
-  })
 
-  describe('/govuk/v3.3.0/components/:component', () => {
     it("should return a govukbutton", () => {
       const expected = `<button class="govuk-button" data-module="govuk-button">
   Save and continue
