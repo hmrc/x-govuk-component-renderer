@@ -1,9 +1,14 @@
 #!/bin/sh
 
-rm -Rf dependencies
-mkdir dependencies
+rm -rf "dependencies/$1"
+mkdir -p dependencies
 
 cd dependencies 
-wget -O gds.tar.gz https://github.com/alphagov/govuk-design-system/tarball/master
-mkdir govuk-design-system && tar xf gds.tar.gz -C govuk-design-system --strip-components 1
-rm -f gds.tar.gz
+
+wget -O dep.tar.gz "$2" --retry-on-http-error=404
+
+mkdir -p "$1" && tar xf dep.tar.gz -C "$1" --strip-components 1
+rm -f dep.tar.gz
+
+cd "$1"
+echo "$3" > version.txt

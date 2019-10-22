@@ -10,6 +10,6 @@ const jsonParser = bodyParser.json()
 
 router.get('/', rootController)
 router.get('/examples-output/:component', examplesController)
-router.post('/govuk/v3.3.0/components/:component', jsonParser, componentController)
+router.post('/govuk/:version/components/:component', jsonParser, componentController)
 
 module.exports = router

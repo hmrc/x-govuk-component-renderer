@@ -1,13 +1,26 @@
 const nunjucks = require('../../lib/nunjucks')
+
 const {
   getComponentIdentifier,
+  getDependency
 } = require('../../util')
 
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   const {
     body = {},
-    params: { component }
+    params: {
+      version,
+      component
+    }
   } = req
+
+  const trimmedVersion = version.replace('v', '')
+  
+  await getDependency(
+    `govuk-frontend-${version}`,
+    `https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-${trimmedVersion}.tgz`,
+    trimmedVersion
+  )
 
   const params = JSON.stringify(body, null, 2)
   try {
