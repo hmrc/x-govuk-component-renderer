@@ -5,18 +5,19 @@ const {
   getComponentIdentifier,
   getDataFromFile,
   getDependency,
-  getDirectories
+  getDirectories,
+  getGovukFrontend
 } = require('../../util')
 
 const {
-  dsComponentRoot,
+  designSystemRoot,
   substitutionMap
 } = require('../../constants')
 
 module.exports = async (req, res) => {
   const { params: { component } } = req
   const componentIdentifier = getComponentIdentifier(component)
-  const componentPath = `${dsComponentRoot}${substitutionMap[componentIdentifier] || componentIdentifier}`
+  const componentPath = `${designSystemRoot}/src/components/${substitutionMap[componentIdentifier] || componentIdentifier}`
   
   const name = 'alphagov/govuk-design-system'
   const { data: { sha } } = await axios.get(`https://api.github.com/repos/${name}/commits/master`)
@@ -25,7 +26,11 @@ module.exports = async (req, res) => {
     `https://github.com/${name}/tarball/${sha}`,
     sha
   )
-    
+
+  const govukFrontendVersion = require(`${designSystemRoot}/package.json`).dependencies['govuk-frontend']
+  
+  await getGovukFrontend(govukFrontendVersion)
+
   try {
     const examples = getDirectories(path.resolve(__dirname, componentPath))
     const output = []

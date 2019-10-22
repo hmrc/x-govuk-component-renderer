@@ -51,9 +51,23 @@ const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
   })
 })
 
+const getGovukFrontend = async (version) => {
+  const trimmedVersion = version
+    .replace('v', '')
+    .replace('^', '')
+    .replace('~', '')
+
+  await getDependency(
+    `govuk-frontend`,
+    `https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-${trimmedVersion}.tgz`,
+    trimmedVersion
+  )
+}
+
 module.exports = {
   getComponentIdentifier,
   getDataFromFile,
   getDependency,
-  getDirectories
+  getDirectories,
+  getGovukFrontend
 }
