@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   const trimmedVersion = version.replace('v', '')
   
   await getDependency(
-    `govuk-frontend-${version}`,
+    `govuk-frontend`,
     `https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-${trimmedVersion}.tgz`,
     trimmedVersion
   )
