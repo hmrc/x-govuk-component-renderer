@@ -51,18 +51,10 @@ const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
 })
 
 const getGovukFrontend = async (version) => {
-  // TODO:
-  // this is fragile as it will be broken by a version range or any other npm semver
-  // operator such as >, <= etc...
-  const trimmedVersion = version
-    .replace('v', '')
-    .replace('^', '')
-    .replace('~', '')
-
   await getDependency(
     `govuk-frontend`,
-    `https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-${trimmedVersion}.tgz`,
-    trimmedVersion
+    `https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-${version}.tgz`,
+    version
   )
 }
 

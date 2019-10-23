@@ -28,8 +28,15 @@ module.exports = async (req, res) => {
   )
 
   const govukFrontendVersion = require(`${designSystemRoot}/package.json`).dependencies['govuk-frontend']
-  
-  await getGovukFrontend(govukFrontendVersion)
+  // TODO:
+  // this is fragile as it will be broken by a version range or any other npm semver
+  // operator such as >, <= etc...
+  const trimmedVersion = govukFrontendVersion
+    .replace('v', '')
+    .replace('^', '')
+    .replace('~', '')
+
+  await getGovukFrontend(trimmedVersion)
 
   try {
     const examples = getDirectories(path.resolve(__dirname, componentPath))
