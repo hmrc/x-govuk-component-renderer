@@ -2,7 +2,6 @@ const nunjucks = require('../../lib/nunjucks')
 
 const {
   getComponentIdentifier,
-  getDependency,
   getGovukFrontend
 } = require('../../util')
 
