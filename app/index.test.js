@@ -13,14 +13,38 @@ expectHtmlToMatch = (expected, actual) => {
 
 describe("Templates as a service... again!", () => {
 
-  describe('/govuk/v3.3.0/components/:component', () => {
+  describe('/govuk/:version/components/:component', () => {
+    it("should return 500 and an error if the version requested is older than 3.0.0", () => {
+      return request(app)
+        .post("/govuk/2.3.4/components/govukButton")
+        .send({ text: "Button from an unsupported version" })
+        .expect(500)
+        .then(response => {
+          expect(response.text).toBe('This version of govuk-frontend is not supported')
+        })
+    })
+
+    it("should return an older version of govukbutton", () => {
+      const expected = `<button type="submit" class="govuk-button" data-module="govuk-button">
+  Button from an older version
+</button>`
+
+      return request(app)
+        .post("/govuk/3.0.0/components/govukButton")
+        .send({ text: "Button from an older version" })
+        .expect(200)
+        .then(response => {
+          expect(response.text).toBe(expected)
+        })
+    })
+
     it("should return a govukbutton", () => {
       const expected = `<button class="govuk-button" data-module="govuk-button">
   Save and continue
 </button>`
 
       return request(app)
-        .post("/govuk/v3.3.0/components/govukButton")
+        .post("/govuk/3.3.0/components/govukButton")
         .send({ text: "Save and continue" })
         .expect(200)
         .then(response => {
@@ -34,7 +58,7 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/v3.3.0/components/govukButton")
+        .post("/govuk/3.3.0/components/govukButton")
         .send({ text: "I Waz 'ere" })
         .expect(200)
         .then(response => {
@@ -86,7 +110,7 @@ describe("Templates as a service... again!", () => {
 </div>`
 
       return request(app)
-        .post("/govuk/v3.3.0/components/govukDateInput")
+        .post("/govuk/3.3.0/components/govukDateInput")
         .send({
           fieldset: {
             legend: {
@@ -169,7 +193,7 @@ describe("Templates as a service... again!", () => {
 `
 
       return request(app)
-        .post("/govuk/v3.3.0/components/govukFooter")
+        .post("/govuk/3.3.0/components/govukFooter")
         .send()
         .expect(200)
         .then(response => {
@@ -177,7 +201,7 @@ describe("Templates as a service... again!", () => {
         })
     })
   })
-
+  
   describe('/examples-output/:component', () => {
     const expected = [
       {

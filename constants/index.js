@@ -1,7 +1,8 @@
 const path = require('path')
 
 module.exports = {
-  dsComponentRoot: `${path.resolve('dependencies/govuk-design-system/src/components')}/`,
+  govukFrontendRoot: path.resolve('dependencies/govuk-frontend'),
+  designSystemRoot: path.resolve('dependencies/alphagov/govuk-design-system'),
   readMe: path.resolve('README.md'),
   substitutionMap: {
     'input': 'text-input'
