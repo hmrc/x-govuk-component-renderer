@@ -24,7 +24,6 @@ const getDependency = async (name, remote, latest) => {
 
   if (version !== latest) {
     await spawnPromise('./getDependencies.sh', [name, remote, latest])
-    return
   }
 }
 

@@ -2,7 +2,7 @@
 
 ### 1.
 
-`POST` to `/govuk/$$VERSION$$/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend e.g. `govukSelect`, `govukButton`, `govukHeader`
+`POST` to `/govuk/$$VERSION$$/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend (e.g. `govukSelect`, `govukButton`, `govukHeader`) and `$$VERSION$$` is the NPM package version (e.g. `v3.0.0`, `3.1.0`)
 
 The request body should contain JSON (therefore a `content-type: application/json` on the request) containing the parameters for the component.  For example:
 
