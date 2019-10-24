@@ -1,6 +1,6 @@
 {
   "name": "taasa",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Templates as a service",
   "main": "index.js",
   "scripts": {
@@ -20,6 +20,9 @@
   "devDependencies": {
     "jest": "^24.9.0",
     "supertest": "^4.0.2"
+  },
+  "bin": {
+    "taasa": "./cli.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
