@@ -23,7 +23,7 @@ Posting to `/govuk/3.3.0/components/govukButton` with a body of `{"text": "Save 
 
 `GET` from `/examples-output/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend e.g. `govukSelect`, `govukButton`, `govukHeader`
 
-The response will contain the HTML output of each available example for that component along with an MD5 hash of the HTML.
+The response will contain the Nunjucks and HTML output of each available example for that component.
 
 The response structure is as follows:
 
@@ -31,7 +31,6 @@ The response structure is as follows:
   [
     {
       html: '<div>some markup</div>',
-      md5: '<an_md5_hash>',
       name: '<component_id>/<example_id>',
       nunjucks: '{% some Nunjucks %}'
     }

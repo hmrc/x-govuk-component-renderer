@@ -211,7 +211,6 @@ describe("Templates as a service... again!", () => {
   </label>
   <input class=\"govuk-file-upload\" id=\"file-upload-1\" name=\"file-upload-1\" type=\"file\">
 </div>`,
-        md5: '7a23adc1045d2b75bde07ef81d61c469',
         name: 'file-upload/default',
         nunjucks: `{% from \"govuk/components/file-upload/macro.njk\" import govukFileUpload %}
 
@@ -233,7 +232,6 @@ describe("Templates as a service... again!", () => {
   </span>
   <input class=\"govuk-file-upload govuk-file-upload--error\" id=\"file-upload-1\" name=\"file-upload-1\" type=\"file\" aria-describedby=\"file-upload-1-error\">
 </div>`,
-        md5: '62ed65b2964b40280c34d3912f1786e5',
         name: 'file-upload/error',
         nunjucks: `{% from \"govuk/components/file-upload/macro.njk\" import govukFileUpload %}
 
@@ -250,7 +248,7 @@ describe("Templates as a service... again!", () => {
       }
     ]
 
-    it('should return an array of examples with markup and md5 hash', (done) => {
+    it('should return an array of examples with markup and Nunjucks hash', (done) => {
       return request(app)
         .get("/examples-output/file-upload")
         .expect(200)
