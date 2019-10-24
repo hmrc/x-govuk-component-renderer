@@ -4,7 +4,7 @@ const app = require('./app')
 
 const args = [].concat(process.argv).splice(2)
 const command = args[0]
-const port = ags[1]
+const port = args[1]
 
 if (command !== 'start'){
   throw new Error('You must provide a valid command')
