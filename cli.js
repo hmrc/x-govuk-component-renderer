@@ -1,7 +1,19 @@
 #!/usr/bin/env node
 const pkg = require('./package.json')
+const app = require('./app')
 
 const args = [].concat(process.argv).splice(2)
+const command = args[0]
+const port = ags[1]
 
-console.log(JSON.stringify(args))
-console.log('version', pkg.version)
+if (command !== 'start'){
+  throw new Error('You must provide a valid command')
+}
+
+if (!parseInt(port)){
+  throw new Error('You must provide a vild port')
+}
+
+app.listen(port, () => console.log(`Listening on port ${port}`))
+
+console.log('Running version: ', pkg.version)
