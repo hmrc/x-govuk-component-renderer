@@ -1,12 +1,11 @@
 const fs = require('fs')
 const matter = require('gray-matter')
-const path = require('path')
 const { spawn } = require('child_process')
 
 const md5 = require('../lib/md5')
 const nunjucks = require('../lib/nunjucks')
 
-const pathFromRoot = (parts) => path.join(__dirname, ...parts)
+const { pathFromRoot } = require('../constants')
 
 const spawnPromise = (script, args) => new Promise((resolve, reject) => {
   const process = spawn(script, args)
@@ -25,7 +24,7 @@ const getDependency = async (name, remote, latest) => {
   const version = await lookupLocalVersion()
 
   if (version !== latest) {
-    await spawnPromise(pathFromRoot('getDependencies.sh'), [name, remote, latest])
+    await spawnPromise(pathFromRoot('getDependencies.sh'), [name, remote, latest, pathFromRoot()])
   }
 }
 
@@ -65,6 +64,5 @@ module.exports = {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend,
-  pathFromRoot
+  getGovukFrontend
 }

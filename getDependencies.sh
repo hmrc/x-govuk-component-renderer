@@ -1,9 +1,9 @@
 #!/bin/sh
 
-rm -rf "dependencies/$1"
-mkdir -p dependencies
+rm -rf "$4/dependencies/$1"
+mkdir -p "$4/dependencies"
 
-cd dependencies 
+cd "$4/dependencies" 
 
 wget -O dep.tar.gz "$2" --retry-on-http-error=404
 

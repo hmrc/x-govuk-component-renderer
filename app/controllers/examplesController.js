@@ -5,12 +5,12 @@ const {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend,
-  pathFromRoot
+  getGovukFrontend
 } = require('../../util')
 
 const {
   designSystemRoot,
+  pathFromRoot,
   substitutionMap
 } = require('../../constants')
 
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
   await getGovukFrontend(trimmedVersion)
 
   try {
-    const examples = getDirectories(pathFromRoot(componentPath))
+    const examples = getDirectories(componentPath)
     const output = []
     examples.forEach(example => {
       output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, {

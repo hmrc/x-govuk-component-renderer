@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const pkg = require('./package.json')
 const app = require('./app')
 
