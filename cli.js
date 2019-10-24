@@ -11,7 +11,7 @@ if (command !== 'start'){
 }
 
 if (!parseInt(port)){
-  throw new Error('You must provide a vild port')
+  throw new Error('You must provide a valid port')
 }
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

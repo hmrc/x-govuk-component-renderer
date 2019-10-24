@@ -1,4 +1,3 @@
-const path = require('path')
 const axios = require('axios')
 
 const {
@@ -6,7 +5,8 @@ const {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend
+  getGovukFrontend,
+  pathFromRoot
 } = require('../../util')
 
 const {
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
   await getGovukFrontend(trimmedVersion)
 
   try {
-    const examples = getDirectories(path.resolve(__dirname, componentPath))
+    const examples = getDirectories(pathFromRoot(componentPath))
     const output = []
     examples.forEach(example => {
       output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, {

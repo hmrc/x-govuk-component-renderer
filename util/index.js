@@ -6,13 +6,15 @@ const { spawn } = require('child_process')
 const md5 = require('../lib/md5')
 const nunjucks = require('../lib/nunjucks')
 
+const pathFromRoot = (parts) => path.join(__dirname, ...parts)
+
 const spawnPromise = (script, args) => new Promise((resolve, reject) => {
   const process = spawn(script, args)
   process.on('close', () => { resolve() })
 })
 
 const getDependency = async (name, remote, latest) => {
-  const lookupLocalVersion = () => new Promise((res, rej) => fs.readFile(path.resolve('dependencies', name, 'version.txt'), 'utf8', (err, contents) => {
+  const lookupLocalVersion = () => new Promise((res, rej) => fs.readFile(pathFromRoot('dependencies', name, 'version.txt'), 'utf8', (err, contents) => {
     if (err) {
       res()
     } else {
@@ -23,7 +25,7 @@ const getDependency = async (name, remote, latest) => {
   const version = await lookupLocalVersion()
 
   if (version !== latest) {
-    await spawnPromise('./getDependencies.sh', [name, remote, latest])
+    await spawnPromise(pathFromRoot('getDependencies.sh'), [name, remote, latest])
   }
 }
 
@@ -63,5 +65,6 @@ module.exports = {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend
+  getGovukFrontend,
+  pathFromRoot
 }

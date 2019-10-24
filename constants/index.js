@@ -1,9 +1,9 @@
-const path = require('path')
+const { pathFromRoot } = require('../util')
 
 module.exports = {
-  govukFrontendRoot: path.resolve('dependencies/govuk-frontend'),
-  designSystemRoot: path.resolve('dependencies/alphagov/govuk-design-system'),
-  readMe: path.resolve('README.md'),
+  govukFrontendRoot: pathFromRoot('dependencies', 'govuk-frontend'),
+  designSystemRoot: pathFromRoot('dependencies', 'alphagov', 'govuk-design-system'),
+  readMe: pathFromRoot('README.md'),
   substitutionMap: {
     'input': 'text-input'
   }
