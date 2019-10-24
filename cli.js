@@ -15,6 +15,4 @@ if (!parseInt(port)){
   throw new Error('You must provide a valid port')
 }
 
-app.listen(port, () => console.log(`Listening on port ${port}`))
-
-console.log('Running version: ', pkg.version)
+app.listen(port, () => console.log(`Running version ${pkg.version} on port ${port}`))
