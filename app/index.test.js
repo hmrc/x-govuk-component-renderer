@@ -13,6 +13,35 @@ expectHtmlToMatch = (expected, actual) => {
 
 describe("Templates as a service... again!", () => {
 
+  describe('/hmrc/:version/components/:component', () => {
+    it("should return 500 and an error if the version requested is older than 1.0.0", () => {
+      return request(app)
+        .post("/hmrc/0.1.2/components/hmrcPageHeading")
+        .send({ text: "Page heading from an unsupported version" })
+        .expect(500)
+        .then(response => {
+          expect(response.text).toBe('This version of hmrc-frontend is not supported')
+        })
+    })
+
+    it("should return a hmrc page heading", () => {
+      const expected = `<header class="hmrc-page-heading">
+  <h1 class="govuk-heading-xl">Save and continue</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
+`
+      return request(app)
+        .post("/hmrc/1.4.0/components/hmrcPageHeading")
+        .send({
+          text: "Save and continue",
+          section: 'That section'
+        })
+        .expect(200)
+        .then(response => {
+          expect(response.text).toBe(expected)
+        })
+    })
+
+  })
+
   describe('/govuk/:version/components/:component', () => {
     it("should return 500 and an error if the version requested is older than 3.0.0", () => {
       return request(app)
