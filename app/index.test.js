@@ -26,12 +26,12 @@ describe("Templates as a service... again!", () => {
 
     it("should return a hmrc page heading", () => {
       const expected = `<header class="hmrc-page-heading">
-  <h1 class="govuk-heading-xl">Save and continue</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
+  <h1 class="govuk-heading-xl">This heading</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
 `
       return request(app)
         .post("/hmrc/1.4.0/components/hmrcPageHeading")
         .send({
-          text: "Save and continue",
+          text: "This heading",
           section: 'That section'
         })
         .expect(200)
