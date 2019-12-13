@@ -1,15 +1,13 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 
 const rootController = require('../controllers/rootController')
 const examplesController = require('../controllers/examplesController')
-const componentController = require('../controllers/componentController')
+const componentRouter = require('../routers/componentRouter')
 
 const router = express.Router()
-const jsonParser = bodyParser.json()
 
 router.get('/', rootController)
 router.get('/examples-output/:component', examplesController)
-router.post('/govuk/:version/components/:component', jsonParser, componentController)
+router.use(componentRouter)
 
 module.exports = router

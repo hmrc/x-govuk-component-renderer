@@ -27,7 +27,7 @@ const getDependency = async (name, remote, latest) => {
   }
 }
 
-const getComponentIdentifier = (str) => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`).replace('govuk-', '')
+const getComponentIdentifier = (str) => str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`).replace('govuk-', '').replace('hmrc-', '')
 
 const getDirectories = source => fs.readdirSync(source, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
@@ -58,10 +58,19 @@ const getGovukFrontend = async (version) => {
   )
 }
 
+const getHmrcFrontend = async (version) => {
+  await getDependency(
+    `hmrc-frontend`,
+    `https://registry.npmjs.org/hmrc-frontend/-/hmrc-frontend-${version}.tgz`,
+    version
+  )
+}
+
 module.exports = {
   getComponentIdentifier,
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend
+  getGovukFrontend,
+  getHmrcFrontend
 }
