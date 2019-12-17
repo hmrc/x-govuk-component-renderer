@@ -2,20 +2,17 @@ const nunjucks = require('../../lib/nunjucks')
 
 const {
   getComponentIdentifier,
-  getGovukFrontend,
-  getHmrcFrontend
+  getNpmDependency
 } = require('../../util')
 
 const orgs = {
   'govuk': {
     label: 'govuk-frontend',
-    minimumSupported: 3,
-    get: getGovukFrontend
+    minimumSupported: 3
   },
   'hmrc': {
     label: 'hmrc-frontend',
-    minimumSupported: 1,
-    get: getHmrcFrontend
+    minimumSupported: 1
   }
 }
 
@@ -33,7 +30,7 @@ module.exports = async (req, res, org) => {
   if (parseFloat(version) < minimumSupported) {
     res.status(500).send(`This version of ${label} is not supported`)
   } else {
-    await get(version)
+    await getNpmDependency(label, version)
   
     const params = JSON.stringify(body, null, 2)
     try {
