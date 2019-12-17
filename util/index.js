@@ -1,10 +1,12 @@
 const fs = require('fs')
 const matter = require('gray-matter')
-const path = require('path')
 const { spawn } = require('child_process')
+const axios = require('axios')
 
 const md5 = require('../lib/md5')
 const nunjucks = require('../lib/nunjucks')
+
+const { pathFromRoot } = require('../constants')
 
 const spawnPromise = (script, args) => new Promise((resolve, reject) => {
   const process = spawn(script, args)
@@ -12,7 +14,7 @@ const spawnPromise = (script, args) => new Promise((resolve, reject) => {
 })
 
 const getDependency = async (name, remote, latest) => {
-  const lookupLocalVersion = () => new Promise((res, rej) => fs.readFile(path.resolve('dependencies', name, 'version.txt'), 'utf8', (err, contents) => {
+  const lookupLocalVersion = () => new Promise((res, rej) => fs.readFile(pathFromRoot('dependencies', name, 'version.txt'), 'utf8', (err, contents) => {
     if (err) {
       res()
     } else {
@@ -23,7 +25,7 @@ const getDependency = async (name, remote, latest) => {
   const version = await lookupLocalVersion()
 
   if (version !== latest) {
-    await spawnPromise('./getDependencies.sh', [name, remote, latest])
+    await spawnPromise(pathFromRoot('getDependencies.sh'), [name, remote, latest, pathFromRoot()])
   }
 }
 
@@ -50,20 +52,19 @@ const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
   })
 })
 
-const getGovukFrontend = async (version) => {
+const getNpmDependency = async (dependency, version) => {
   await getDependency(
-    `govuk-frontend`,
-    `https://registry.npmjs.org/govuk-frontend/-/govuk-frontend-${version}.tgz`,
+    dependency,
+    `https://registry.npmjs.org/${dependency}/-/${dependency}-${version}.tgz`,
     version
   )
 }
 
-const getHmrcFrontend = async (version) => {
-  await getDependency(
-    `hmrc-frontend`,
-    `https://registry.npmjs.org/hmrc-frontend/-/hmrc-frontend-${version}.tgz`,
-    version
-  )
+const getLatestSha = async (repo, branch = 'master') => {
+  const token = process.env.TOKEN
+  const headers = token ? { headers: { Authorization: `token ${token}` } } : undefined
+  const { data: { sha } } = await axios.get(`https://api.github.com/repos/${repo}/commits/${branch}`, headers)
+  return sha
 }
 
 module.exports = {
@@ -71,6 +72,6 @@ module.exports = {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend,
-  getHmrcFrontend
+  getNpmDependency,
+  getLatestSha
 }
