@@ -3,10 +3,11 @@ const path = require('path')
 const pathFromRoot = (...parts) => path.join(__dirname, '..', ...parts)
 
 module.exports = {
-  govukFrontendRoot: pathFromRoot('dependencies', 'govuk-frontend'),
-  designSystemRoot: pathFromRoot('dependencies', 'alphagov', 'govuk-design-system'),
+  govukFrontendRoot: path.resolve('dependencies/govuk-frontend'),
+  hmrcFrontendRoot: path.resolve('dependencies/hmrc-frontend'),
+  designSystemRoot: path.resolve('dependencies/alphagov/govuk-design-system'),
   pathFromRoot,
-  readMe: pathFromRoot('README.md'),
+  readMe: path.resolve('README.md'),
   substitutionMap: {
     'input': 'text-input'
   }
