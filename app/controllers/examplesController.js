@@ -1,12 +1,10 @@
-const path = require('path')
-const axios = require('axios')
-
 const {
   getComponentIdentifier,
   getDataFromFile,
   getDependency,
   getDirectories,
-  getGovukFrontend
+  getNpmDependency,
+  getLatestSha
 } = require('../../util')
 
 const {
@@ -20,7 +18,7 @@ module.exports = async (req, res) => {
   const componentPath = `${designSystemRoot}/src/components/${substitutionMap[componentIdentifier] || componentIdentifier}`
   
   const name = 'alphagov/govuk-design-system'
-  const { data: { sha } } = await axios.get(`https://api.github.com/repos/${name}/commits/master`)
+  const sha = await getLatestSha(name)
   await getDependency(
     name,
     `https://github.com/${name}/tarball/${sha}`,
@@ -36,10 +34,10 @@ module.exports = async (req, res) => {
     .replace('^', '')
     .replace('~', '')
 
-  await getGovukFrontend(trimmedVersion)
+  await getNpmDependency('govuk-frontend', trimmedVersion)
 
   try {
-    const examples = getDirectories(path.resolve(__dirname, componentPath))
+    const examples = getDirectories(componentPath)
     const output = []
     examples.forEach(example => {
       output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, {

@@ -1,9 +1,22 @@
-## Here’s the extensive documentation for the API:
+# Here’s the extensive documentation for the API:
 
 ### Environment requirements:
 
 * [WGET](http://gnuwin32.sourceforge.net/packages/wget.htm) >= 1.19.1
 * [Node](https://nodejs.org/en/) 10.15.1
+
+## Running locally
+
+* `npm install` will install the app dependencies
+* `npm start` will run the service on port 3000 *
+
+## Testing
+
+* `npm test` will run the test suite *
+
+\* _Note: If you find rate errors being triggered in the Github API you can pass in an auth token when you start the app like so: `TOKEN=<token> npm start / test`. You can generate an Auth token using your own Github account or request one from [#team-plat-ui](https://hmrcdigital.slack.com/messages/CJMUM9AG3) on HMRC Slack if you'd prefer_
+
+## Usage
 
 ### 1.
 
