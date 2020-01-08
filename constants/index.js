@@ -5,7 +5,8 @@ const pathFromRoot = (...parts) => path.join(__dirname, '..', ...parts)
 module.exports = {
   govukFrontendRoot: path.resolve('dependencies/govuk-frontend'),
   hmrcFrontendRoot: path.resolve('dependencies/hmrc-frontend'),
-  designSystemRoot: path.resolve('dependencies/alphagov/govuk-design-system'),
+  govukDesignSystemRoot: path.resolve('dependencies/alphagov/govuk-design-system'),
+  hmrcDesignSystemRoot: path.resolve('dependencies/hmrc/design-system'),
   pathFromRoot,
   readMe: path.resolve('README.md'),
   substitutionMap: {
