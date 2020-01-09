@@ -48,7 +48,7 @@ Posting to `/hmrc/1.4.0/components/hmrcPageHeading` with a body of `{"text": "Pa
 
 ### 3.
 
-`GET` from `/examples-output/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend e.g. `govukSelect`, `govukButton`, `govukHeader`
+`GET` from `/examples-output/$$ORG$$/$$COMPONENT_NAME$$` where `$$ORG$$` is the owner of the design system (one of `hmrc` or `govuk`) and `$$COMPONENT_NAME$$` is the name of the component required e.g. `govukSelect`, `govukButton`, `hmrcAccountHeader`
 
 The response will contain the HTML output of each available example for that component along with an MD5 hash of the HTML.
 

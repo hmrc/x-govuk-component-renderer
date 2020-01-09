@@ -12,7 +12,7 @@ const router = express.Router()
 const jsonParser = bodyParser.json()
 
 router.get('/', rootController)
-router.get('/examples-output/:component', examplesController)
+router.get('/examples-output/:org/:component', examplesController)
 router.post('/govuk/:version/components/:component', jsonParser, govukComponentController)
 router.post('/hmrc/:version/components/:component', jsonParser, hmrcComponentController)
 
