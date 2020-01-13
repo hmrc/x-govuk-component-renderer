@@ -41,7 +41,7 @@ const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
       reject(err)
     } else {
       const nj = matter(contents).content
-      const html = nunjucks.renderString(nj).trim()
+      const html = nunjucks().renderString(nj).trim()
       resolve({
         ...meta,
         html,
