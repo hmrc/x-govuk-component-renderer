@@ -8,16 +8,33 @@ const {
 } = require('../../util')
 
 const {
-  designSystemRoot,
+  govukDesignSystemRoot,
+  hmrcDesignSystemRoot,
   substitutionMap
 } = require('../../constants')
 
+const orgs = {
+  'govuk': {
+    name: 'alphagov/govuk-design-system',
+    rootPath: govukDesignSystemRoot,
+    componentRootPath: `${govukDesignSystemRoot}/src/components`,
+    dependencies: ['govuk-frontend']
+  },
+  'hmrc': {
+    name: 'hmrc/design-system',
+    rootPath: hmrcDesignSystemRoot,
+    componentRootPath: `${hmrcDesignSystemRoot}/src/examples`,
+    dependencies: ['govuk-frontend', 'hmrc-frontend']
+  }
+}
+
 module.exports = async (req, res) => {
-  const { params: { component } } = req
+  const { params: { component, org } } = req
+  const { componentRootPath, dependencies, name, rootPath } = orgs[org]
+
   const componentIdentifier = getComponentIdentifier(component)
-  const componentPath = `${designSystemRoot}/src/components/${substitutionMap[componentIdentifier] || componentIdentifier}`
-  
-  const name = 'alphagov/govuk-design-system'
+  const componentPath = `${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
+
   const sha = await getLatestSha(name)
   await getDependency(
     name,
@@ -25,16 +42,14 @@ module.exports = async (req, res) => {
     sha
   )
 
-  const govukFrontendVersion = require(`${designSystemRoot}/package.json`).dependencies['govuk-frontend']
-  // TODO:
-  // this is fragile as it will be broken by a version range or any other npm semver
-  // operator such as >, <= etc...
-  const trimmedVersion = govukFrontendVersion
-    .replace('v', '')
-    .replace('^', '')
-    .replace('~', '')
-
-  await getNpmDependency('govuk-frontend', trimmedVersion)
+  for (const dependency of dependencies) {
+    const version = require(`${rootPath}/package.json`).dependencies[dependency]
+    const trimmedVersion = version
+      .replace('v', '')
+      .replace('^', '')
+      .replace('~', '')
+    await getNpmDependency(dependency, trimmedVersion)
+  }
 
   try {
     const examples = getDirectories(componentPath)
