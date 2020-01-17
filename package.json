@@ -1,5 +1,5 @@
 {
-  "name": "taasa",
+  "name": "x-govuk-component-renderer",
   "version": "0.0.1",
   "description": "Templates as a service",
   "main": "index.js",
