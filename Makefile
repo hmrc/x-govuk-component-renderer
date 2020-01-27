@@ -11,12 +11,14 @@ build: prep_version_incrementor ## Build the docker image
 	@pipenv run prepare-release
 	@umask 0022
 	@docker build --no-cache --build-arg NODE_VERSION=$(NODE_VERSION) -f docker/Dockerfile -t artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):$$(cat .version) .
+	@docker tag artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):$$(cat .version) artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):latest
 
 authenticate_to_artifactory:
 	@docker login --username ${ARTIFACTORY_USERNAME} --password "${ARTIFACTORY_PASSWORD}"  artefacts.tax.service.gov.uk
 
-push_image: ## Push the fluentbit docker image to artifactory
+push_image: ## Push the docker image to artifactory
 	@docker push artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):$$(cat .version)
+	@docker push artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):latest
 	@pipenv run cut-release
 
 prep_version_incrementor:
@@ -26,9 +28,10 @@ prep_version_incrementor:
 	@pipenv --python $(PYTHON_VERSION)
 	@pipenv run pip install -i https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple version-incrementor==0.2.0
 
-clean: ## Remove the fluentbit docker image
+clean: ## Remove the docker image
 	@echo '********** Cleaning up ************'
 	@docker rmi -f $$(docker images artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):$$(cat .version) -q)
+	@docker rmi -f $$(docker images artefacts.tax.service.gov.uk/$(COMPONENT_RENDERER_SERVICE_NAME):latest -q)
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
