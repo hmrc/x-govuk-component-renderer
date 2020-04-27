@@ -50,7 +50,7 @@ Posting to `/hmrc/1.4.0/components/hmrcPageHeading` with a body of `{"text": "Pa
 
 `GET` from `/examples-output/$$ORG$$/$$COMPONENT_NAME$$` where `$$ORG$$` is the owner of the design system (one of `hmrc` or `govuk`) and `$$COMPONENT_NAME$$` is the name of the component required e.g. `govukSelect`, `govukButton`, `hmrcAccountHeader`
 
-The response will contain the HTML output of each available example for that component along with an MD5 hash of the HTML.
+The response will contain the Nunjucks and HTML output of each available example for that component.
 
 The response structure is as follows:
 
@@ -58,7 +58,6 @@ The response structure is as follows:
   [
     {
       html: '<div>some markup</div>',
-      md5: '<an_md5_hash>',
       name: '<component_id>/<example_id>',
       nunjucks: '{% some Nunjucks %}'
     }

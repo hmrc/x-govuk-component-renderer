@@ -3,7 +3,6 @@ const matter = require('gray-matter')
 const { spawn } = require('child_process')
 const axios = require('axios')
 
-const md5 = require('../lib/md5')
 const nunjucks = require('../lib/nunjucks')
 
 const { pathFromRoot } = require('../constants')
@@ -45,7 +44,6 @@ const getDataFromFile = (file, meta) => new Promise((resolve, reject) => {
       resolve({
         ...meta,
         html,
-        md5: md5(html),
         nunjucks: nj.trim(),
       })
     }
