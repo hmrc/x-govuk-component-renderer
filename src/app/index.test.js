@@ -13,6 +13,35 @@ expectHtmlToMatch = (expected, actual) => {
 
 describe("Templates as a service... again!", () => {
 
+  describe('/hmrc/:version/components/:component', () => {
+    it("should return 500 and an error if the version requested is older than 1.0.0", () => {
+      return request(app)
+        .post("/hmrc/0.1.2/components/hmrcPageHeading")
+        .send({ text: "Page heading from an unsupported version" })
+        .expect(500)
+        .then(response => {
+          expect(response.text).toBe('This version of hmrc-frontend is not supported')
+        })
+    })
+
+    it("should return a hmrc page heading", () => {
+      const expected = `<header class="hmrc-page-heading">
+  <h1 class="govuk-heading-xl">This heading</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
+`
+      return request(app)
+        .post("/hmrc/1.4.0/components/hmrcPageHeading")
+        .send({
+          text: "This heading",
+          section: 'That section'
+        })
+        .expect(200)
+        .then(response => {
+          expect(response.text).toBe(expected)
+        })
+    })
+
+  })
+
   describe('/govuk/:version/components/:component', () => {
     it("should return 500 and an error if the version requested is older than 3.0.0", () => {
       return request(app)
@@ -202,7 +231,7 @@ describe("Templates as a service... again!", () => {
     })
   })
   
-  describe('/examples-output/:component', () => {
+  describe('/examples-output/:org/:component', () => {
     const expected = [
       {
         html: `<div class=\"govuk-form-group\">
@@ -250,7 +279,7 @@ describe("Templates as a service... again!", () => {
 
     it('should return an array of examples with markup and Nunjucks hash', (done) => {
       return request(app)
-        .get("/examples-output/file-upload")
+        .get("/examples-output/govuk/file-upload")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual(expected)
@@ -260,7 +289,7 @@ describe("Templates as a service... again!", () => {
     
     it('should work if the request uses the macro name', (done) => {
       return request(app)
-        .get("/examples-output/govukFileUpload")
+        .get("/examples-output/govuk/govukFileUpload")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual(expected)
@@ -270,8 +299,22 @@ describe("Templates as a service... again!", () => {
 
     it('should return a 500 if requested component does not exist', () => {
       return request(app)
-        .get("/examples-output/foo")
+        .get("/examples-output/govuk/foo")
         .expect(500)
+    })
+
+    it('should work with HMRC components', (done) => {
+      return request(app)
+        .get("/examples-output/hmrc/green-button")
+        .expect(200)
+        .then(response => {
+          expect(response.body).toEqual([{
+            name: "green-button/example",
+            html: "<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n<button class=\"govuk-button govuk-button--start\" data-module=\"govuk-button\">\n  Start now\n  <svg class=\"govuk-button__start-icon\" xmlns=\"http://www.w3.org/2000/svg\" width=\"17.5\" height=\"19\" viewBox=\"0 0 33 40\" role=\"presentation\" focusable=\"false\">\n    <path fill=\"currentColor\" d=\"M0 0h13l20 20-20 20H0l20-20z\"/>\n  </svg>\n</button>",
+            nunjucks: "{% from \"govuk/components/button/macro.njk\" import govukButton %}\n\n<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n{{ govukButton({\n  text: \"Start now\",\n  isStartButton: true\n}) }}"
+          }])
+          done()
+        })
     })
   })
 
