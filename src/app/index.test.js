@@ -13,10 +13,10 @@ expectHtmlToMatch = (expected, actual) => {
 
 describe("Templates as a service... again!", () => {
 
-  describe('/hmrc/:version/components/:component', () => {
+  describe('HMRC component endpoint', () => {
     it("should return 500 and an error if the version requested is older than 1.0.0", () => {
       return request(app)
-        .post("/hmrc/0.1.2/components/hmrcPageHeading")
+        .post("/component/hmrc/0.1.2/hmrcPageHeading")
         .send({ text: "Page heading from an unsupported version" })
         .expect(500)
         .then(response => {
@@ -29,7 +29,7 @@ describe("Templates as a service... again!", () => {
   <h1 class="govuk-heading-xl">This heading</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
 `
       return request(app)
-        .post("/hmrc/1.4.0/components/hmrcPageHeading")
+        .post("/component/hmrc/1.4.0/hmrcPageHeading")
         .send({
           text: "This heading",
           section: 'That section'
@@ -42,10 +42,10 @@ describe("Templates as a service... again!", () => {
 
   })
 
-  describe('/govuk/:version/components/:component', () => {
+  describe('GOVUK component', () => {
     it("should return 500 and an error if the version requested is older than 3.0.0", () => {
       return request(app)
-        .post("/govuk/2.3.4/components/govukButton")
+        .post("/component/govuk/2.3.4/govukButton")
         .send({ text: "Button from an unsupported version" })
         .expect(500)
         .then(response => {
@@ -59,7 +59,7 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/3.0.0/components/govukButton")
+        .post("/component/govuk/3.0.0/govukButton")
         .send({ text: "Button from an older version" })
         .expect(200)
         .then(response => {
@@ -73,7 +73,7 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukButton")
+        .post("/component/govuk/3.3.0/govukButton")
         .send({ text: "Save and continue" })
         .expect(200)
         .then(response => {
@@ -87,7 +87,7 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukButton")
+        .post("/component/govuk/3.3.0/govukButton")
         .send({ text: "I Waz 'ere" })
         .expect(200)
         .then(response => {
@@ -139,7 +139,7 @@ describe("Templates as a service... again!", () => {
 </div>`
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukDateInput")
+        .post("/component/govuk/3.3.0/govukDateInput")
         .send({
           fieldset: {
             legend: {
@@ -222,7 +222,7 @@ describe("Templates as a service... again!", () => {
 `
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukFooter")
+        .post("/component/govuk/3.3.0/govukFooter")
         .send()
         .expect(200)
         .then(response => {
@@ -231,7 +231,7 @@ describe("Templates as a service... again!", () => {
     })
   })
   
-  describe('/examples-output/:org/:component', () => {
+  describe('Examples output', () => {
     const expected = [
       {
         html: `<div class=\"govuk-form-group\">
@@ -318,7 +318,7 @@ describe("Templates as a service... again!", () => {
     })
   })
 
-  describe('/', () => {
+  describe('Root page', () => {
     it('should return rendered markdown of README.md', (done) => {
       let expected
       fs.readFile(readMe, 'utf8', (err, contents) => {
@@ -335,10 +335,10 @@ describe("Templates as a service... again!", () => {
     })
   })
 
-  describe('/invalid-path', () => {
+  describe('Unknown paths', () => {
     it('should return a 404', () => {
       return request(app)
-        .get("/invalid-path")
+        .get("/unknown-path")
         .expect(404)
     })
   })

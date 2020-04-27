@@ -13,6 +13,9 @@ const {
   substitutionMap
 } = require('../../constants')
 
+const express = require('express')
+const router = express.Router()
+
 const orgs = {
   'govuk': {
     name: 'alphagov/govuk-design-system',
@@ -28,7 +31,7 @@ const orgs = {
   }
 }
 
-module.exports = async (req, res) => {
+router.get('/:org/:component', async (req, res) => {
   const { params: { component, org } } = req
   const { componentRootPath, dependencies, name, rootPath } = orgs[org]
 
@@ -66,4 +69,6 @@ module.exports = async (req, res) => {
   } catch (err) {
     res.status(500).send(err)
   }
-}
+})
+
+module.exports = router

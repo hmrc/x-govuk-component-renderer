@@ -20,11 +20,11 @@
 
 ### 1.
 
-`POST` to `/govuk/$$VERSION$$/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend (e.g. `govukSelect`, `govukButton`, `govukHeader`) and `$$VERSION$$` is the NPM package version (e.g. `3.0.0`, `3.1.0`), this must be 3.0.0 or greater.
+`POST` to `/component/govuk/$$VERSION$$/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from govuk-frontend (e.g. `govukSelect`, `govukButton`, `govukHeader`) and `$$VERSION$$` is the NPM package version (e.g. `3.0.0`, `3.1.0`), this must be 3.0.0 or greater.
 
 The request body should contain JSON (therefore a `content-type: application/json` on the request) containing the parameters for the component.  For example:
 
-Posting to `/govuk/3.3.0/components/govukButton` with a body of `{"text": "Save and continue"}` would return the HTML:
+Posting to `/component/govuk/3.3.0/govukButton` with a body of `{"text": "Save and continue"}` would return the HTML:
 
 ```
 <button class="govuk-button" data-module="govuk-button">
@@ -34,11 +34,11 @@ Posting to `/govuk/3.3.0/components/govukButton` with a body of `{"text": "Save 
 
 ### 2.
 
-`POST` to `/hmrc/$$VERSION$$/components/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from hmrc-frontend (e.g. `hmrcPageHeading`) and `$$VERSION$$` is the NPM package version (e.g. `1.0.0`, `1.4.0`), this must be 1.0.0 or greater.
+`POST` to `/component/hmrc/$$VERSION$$/$$COMPONENT_NAME$$` where `$$COMPONENT_NAME$$` is the name of the component from hmrc-frontend (e.g. `hmrcPageHeading`) and `$$VERSION$$` is the NPM package version (e.g. `1.0.0`, `1.4.0`), this must be 1.0.0 or greater.
 
 The request body should contain JSON (therefore a `content-type: application/json` on the request) containing the parameters for the component.  For example:
 
-Posting to `/hmrc/1.4.0/components/hmrcPageHeading` with a body of `{"text": "Page heading"}` would return the HTML:
+Posting to `/component/hmrc/1.4.0/hmrcPageHeading` with a body of `{"text": "Page heading"}` would return the HTML:
 
 ```
 <header class="hmrc-page-heading">
