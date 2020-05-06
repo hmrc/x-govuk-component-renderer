@@ -63,6 +63,7 @@ const getDependency = (name, remote, version) => {
             } else if (statusCode === 302) {
               getDependency(name, response.headers.location, version) // TODO: avoid infinite following
                 .then(path => resolve(path))
+                .catch(err => reject(err))
             } else {
               const message = `Failed to load ${path} status code was ${statusCode}`
               console.error(message)
