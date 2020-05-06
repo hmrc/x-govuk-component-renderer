@@ -81,6 +81,41 @@ describe("Templates as a service... again!", () => {
         })
     })
 
+    it("should be able to respond to old an new versions simultaneously", () => {
+      const input = { text: "Button Example", isStartButton: true }
+      const older = request(app)
+        .post("/component/govuk/3.0.0/govukButton")
+        .send(input)
+        .expect(200)
+        .then(response => {
+          expect(response.text.startsWith('<button type="submit" class="govuk-button')).toBe(true)
+          expect(response.text.includes('role="presentation"')).toBe(true)
+          expect(response.text.includes('aria-hidden="true"')).toBe(false)
+        })
+
+      const medium = request(app)
+        .post("/component/govuk/3.3.0/govukButton")
+        .send(input)
+        .expect(200)
+        .then(response => {
+          expect(response.text.startsWith('<button class="govuk-button')).toBe(true)
+          expect(response.text.includes('role="presentation"')).toBe(true)
+          expect(response.text.includes('aria-hidden="true"')).toBe(false)
+        })
+
+      const newer = request(app)
+        .post("/component/govuk/3.6.0/govukButton")
+        .send(input)
+        .expect(200)
+        .then(response => {
+          expect(response.text.startsWith('<button class="govuk-button')).toBe(true)
+          expect(response.text.includes('role="presentation"')).toBe(false)
+          expect(response.text.includes('aria-hidden="true"')).toBe(true)
+        })
+
+      return Promise.all([older, medium, newer])
+    })
+
     it("should return the text I provided", () => {
       const expected = `<button class="govuk-button" data-module="govuk-button">
   I Waz &#39;ere
@@ -230,7 +265,7 @@ describe("Templates as a service... again!", () => {
         })
     })
   })
-  
+
   describe('Examples output', () => {
     const expected = [
       {
@@ -286,7 +321,7 @@ describe("Templates as a service... again!", () => {
           done()
         })
     })
-    
+
     it('should work if the request uses the macro name', (done) => {
       return request(app)
         .get("/examples-output/govuk/govukFileUpload")
