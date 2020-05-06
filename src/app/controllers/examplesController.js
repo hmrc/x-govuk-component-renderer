@@ -49,22 +49,21 @@ router.get('/:org/:component', async (req, res) => {
         .replace('^', '')
         .replace('~', '')
       return getNpmDependency(dependency, trimmedVersion)
-    })).then(subdependecyPaths => ({ dependencyPath, subdependecyPaths }))
+    })).then(subdependecyPaths => ({dependencyPath, subdependecyPaths}))
   }).then(paths => {
     const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
     const examples = getDirectories(componentPath)
-    const output = []
-    examples.forEach(example => {
-      output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
+
+
+    return Promise.all(
+      examples.map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
         name: `${componentIdentifier}/${example}`
       }))
-    })
-
-
-    Promise.all(output).then(result => {
+    )
+  })
+    .then(result => {
       res.send(result)
     })
-  })
     .catch(err => {
       console.error(err.message)
       console.error(err.stack)
