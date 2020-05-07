@@ -112,11 +112,23 @@ const getLatestSha = async (repo, branch = 'master') => {
   return sha
 }
 
+const getOrgDetails = org => ({
+  'govuk': {
+    label: 'govuk-frontend',
+    minimumSupported: 3
+  },
+  'hmrc': {
+    label: 'hmrc-frontend',
+    minimumSupported: 1
+  }
+})[org]
+
 module.exports = {
   getComponentIdentifier,
   getDataFromFile,
   getDependency,
   getDirectories,
   getNpmDependency,
-  getLatestSha
+  getLatestSha,
+  getOrgDetails
 }

@@ -353,7 +353,85 @@ describe("Templates as a service... again!", () => {
     })
   })
 
-  describe('Root page', () => {
+  describe('GOVUK template', () => {
+    it("should return 500 and an error if the version requested is older than 3.0.0", () => {
+      return request(app)
+        .post("/template/govuk/2.3.4/default")
+        .send({})
+        .expect(500)
+        .then(response => {
+          expect(response.text).toBe('This version of govuk-frontend is not supported')
+        })
+    })
+
+    it("should reject unknown templates", () => {
+      return request(app)
+        .post("/template/govuk/3.6.0/some-template")
+        .send({})
+        .expect(400)
+        .then(response => {
+          expect(response.text).toBe('Currently only "govuk" and the "default" template is supported')
+        })
+    })
+
+    it("should render govuk template with blocks and variables", () => {
+      return request(app)
+        .post("/template/govuk/3.6.0/default")
+        .send({
+          variables: {
+            htmlLang: "abc",
+            htmlClasses: "def",
+            assetPath: "/ghi/jkl",
+            bodyAttributes: {
+              one: 1,
+              "data-two": "this-is two"
+            }
+          },
+          blocks: {
+            beforeContent: "abcdefghijklmnop",
+            pageTitle: "This is the title",
+            headIcons: "headIcons",
+            skipLink: "skipLink",
+            header: "the header",
+            main: "the main",
+            footer: "The footer"
+          }
+        })
+        .expect(200)
+        .then(response => {
+          expectHtmlToMatch(response.text, `<!DOCTYPE html>
+<html lang="abc" class="govuk-template def">
+
+<head>
+\t<meta charset="utf-8">
+\t<title>This is the title</title>
+\t<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+\t<meta name="theme-color" content="#0b0c0c">
+
+\t<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+\theadIcons
+
+
+\t<meta property="og:image" content="/ghi/jkl/images/govuk-opengraph-image.png">
+</head>
+
+<body class="govuk-template__body " one="1" data-two="this-is two">
+\t<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+\tskipLink
+\tthe header
+\tthe main
+\tThe footer
+</body>
+
+</html>
+`.replace(/\s+/g, '\n'))
+        })
+    })
+  })
+
+    describe('Root page', () => {
     it('should return rendered markdown of README.md', (done) => {
       let expected
       fs.readFile(readMe, 'utf8', (err, contents) => {
