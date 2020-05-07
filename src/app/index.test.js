@@ -314,7 +314,7 @@ describe("Templates as a service... again!", () => {
 
     it('should return an array of examples with markup and Nunjucks hash', (done) => {
       return request(app)
-        .get("/examples-output/govuk/file-upload")
+        .get("/example-usage/govuk/file-upload")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual(expected)
@@ -324,7 +324,7 @@ describe("Templates as a service... again!", () => {
 
     it('should work if the request uses the macro name', (done) => {
       return request(app)
-        .get("/examples-output/govuk/govukFileUpload")
+        .get("/example-usage/govuk/govukFileUpload")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual(expected)
@@ -334,13 +334,13 @@ describe("Templates as a service... again!", () => {
 
     it('should return a 500 if requested component does not exist', () => {
       return request(app)
-        .get("/examples-output/govuk/foo")
+        .get("/example-usage/govuk/foo")
         .expect(500)
     })
 
     it('should work with HMRC components', (done) => {
       return request(app)
-        .get("/examples-output/hmrc/green-button")
+        .get("/example-usage/hmrc/green-button")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual([{

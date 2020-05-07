@@ -6,7 +6,7 @@ const componentController = require('../controllers/componentController')
 
 const router = express.Router()
 
-router.use('/examples-output', examplesController)
+router.use('/example-usage', examplesController)
 router.use('/component', componentController)
 router.use(rootController)
 

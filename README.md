@@ -48,7 +48,7 @@ Posting to `/component/hmrc/1.4.0/hmrcPageHeading` with a body of `{"text": "Pag
 
 ### 3.
 
-`GET` from `/examples-output/$$ORG$$/$$COMPONENT_NAME$$` where `$$ORG$$` is the owner of the design system (one of `hmrc` or `govuk`) and `$$COMPONENT_NAME$$` is the name of the component required e.g. `govukSelect`, `govukButton`, `hmrcAccountHeader`
+`GET` from `/example-usage/$$ORG$$/$$COMPONENT_NAME$$` where `$$ORG$$` is the owner of the design system (one of `hmrc` or `govuk`) and `$$COMPONENT_NAME$$` is the name of the component required e.g. `govukSelect`, `govukButton`, `hmrcAccountHeader`
 
 The response will contain the Nunjucks and HTML output of each available example for that component.
 

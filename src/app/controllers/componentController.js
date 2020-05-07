@@ -40,13 +40,16 @@ router.post('/:org/:version/:component', jsonParser, async (req, res) => {
   } else {
     getNpmDependency(label, version).then(path => {
       const nunjucksPaths = [path, `${path}/views/layouts`]
-
       const params = JSON.stringify(body, null, 2)
+      const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${params})}}`
+
       try {
-        const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${params})}}`
         res.send(nunjucks(nunjucksPaths).renderString(nunjucksString))
       } catch (err) {
-        res.status(500).send(err)
+        console.error(err.message)
+        console.error(err.stack)
+        console.info('template was:', nunjucksString)
+        res.status(500).send(`An error occurred: ${err.message}`)
       }
     })
   }
