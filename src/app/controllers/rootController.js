@@ -3,7 +3,7 @@ const marked = require('marked')
 const express = require('express')
 const router = express.Router()
 
-const { readMe } = require('../../constants')
+const { readMe } = require('../constants')
 
 router.get('/', (req, res) => {
   fs.readFile(readMe, 'utf8', (err, contents) => {

@@ -2,7 +2,7 @@ const request = require("supertest")
 const fs = require('fs')
 const marked = require('marked')
 
-const { readMe } = require('../constants')
+const { readMe } = require('./constants')
 
 const app = require("./")
 

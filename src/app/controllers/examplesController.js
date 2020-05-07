@@ -9,7 +9,7 @@ const {
 
 const {
   substitutionMap
-} = require('../../constants')
+} = require('../constants')
 
 const express = require('express')
 const router = express.Router()

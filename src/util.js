@@ -5,9 +5,9 @@ const axios = require('axios')
 const http = require('https')
 const tar = require('tar')
 
-const nunjucks = require('../lib/nunjucks')
+const nunjucks = require('./lib/nunjucks')
 
-const {pathFromRoot} = require('../constants')
+const {pathFromRoot} = require('./app/constants')
 
 const spawnPromise = (script, args) => new Promise((resolve, reject) => {
   const process = spawn(script, args)

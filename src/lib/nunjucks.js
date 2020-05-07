@@ -5,7 +5,7 @@ const {
   govukFrontendRoot,
   hmrcDesignSystemRoot,
   hmrcFrontendRoot
-} = require('../constants')
+} = require('../app/constants')
 
 const configured = (paths = []) => {
   return nunjucks.configure([
