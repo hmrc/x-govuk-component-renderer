@@ -3,7 +3,7 @@ const {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getNpmDependency,
+  getSubDependencies,
   getLatestSha
 } = require('../../util')
 
@@ -33,34 +33,29 @@ router.get('/:org/:component', async (req, res) => {
 
   const componentIdentifier = getComponentIdentifier(undefined, component)
 
-  const sha = await getLatestSha(name)
-  getDependency(
-    name,
-    `https://github.com/${name}/tarball/${sha}`,
-    sha
-  ).then(dependencyPath => {
-
-
-    return Promise.all(dependencies.map(dependency => {
-      const packageContents = require(`${dependencyPath}/package.json`)
-      const version = packageContents.dependencies[dependency]
-      const trimmedVersion = version
-        .replace('v', '')
-        .replace('^', '')
-        .replace('~', '')
-      return getNpmDependency(dependency, trimmedVersion)
-    })).then(subdependecyPaths => ({dependencyPath, subdependecyPaths}))
-  }).then(paths => {
-    const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
-    const examples = getDirectories(componentPath)
-
-
-    return Promise.all(
-      examples.map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
-        name: `${componentIdentifier}/${example}`
+  getLatestSha(name)
+    .then(sha => getDependency(
+      name,
+      `https://github.com/${name}/tarball/${sha}`,
+      sha
+    ))
+    .then(dependencyPath => getSubDependencies(dependencyPath, dependencies)
+      .then(subdependecyPaths => ({
+        dependencyPath,
+        subdependecyPaths
       }))
     )
-  })
+    .then(paths => {
+      const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
+      const examples = getDirectories(componentPath)
+
+
+      return Promise.all(
+        examples.map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
+          name: `${componentIdentifier}/${example}`
+        }))
+      )
+    })
     .then(result => {
       res.send(result)
     })

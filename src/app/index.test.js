@@ -2,7 +2,7 @@ const request = require("supertest")
 const fs = require('fs')
 const marked = require('marked')
 
-const { readMe } = require('./constants')
+const {readMe} = require('./constants')
 
 const app = require("./")
 
@@ -11,13 +11,13 @@ expectHtmlToMatch = (expected, actual) => {
   expect(normalise(expected)).toBe(normalise(actual))
 }
 
-describe("Templates as a service... again!", () => {
+describe("X-GOVUK Component Renderer", () => {
 
   describe('HMRC component endpoint', () => {
     it("should return 500 and an error if the version requested is older than 1.0.0", () => {
       return request(app)
         .post("/component/hmrc/0.1.2/hmrcPageHeading")
-        .send({ text: "Page heading from an unsupported version" })
+        .send({text: "Page heading from an unsupported version"})
         .expect(500)
         .then(response => {
           expect(response.text).toBe('This version of hmrc-frontend is not supported')
@@ -40,13 +40,36 @@ describe("Templates as a service... again!", () => {
         })
     })
 
+    it("should return a currencyInput (which requires govuk-frontend)", () => {
+      const expected = `<div class="govuk-form-group">
+	<div class="hmrc-currency-input__wrapper">
+		<span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
+		<input
+            class="govuk-input"
+            id="mpqzobgghvhv"
+            name=""
+            type="text"            inputmode="decimal"/>
+
+    </div>
+	</div>`
+      return request(app)
+        .post("/component/hmrc/1.12.0/hmrcCurrencyInput")
+        .send({
+          "id": "mpqzobgghvhv"
+        })
+        .expect(200)
+        .then(response => {
+          expectHtmlToMatch(response.text, expected)
+        })
+    })
+
   })
 
   describe('GOVUK component', () => {
     it("should return 500 and an error if the version requested is older than 3.0.0", () => {
       return request(app)
         .post("/component/govuk/2.3.4/govukButton")
-        .send({ text: "Button from an unsupported version" })
+        .send({text: "Button from an unsupported version"})
         .expect(500)
         .then(response => {
           expect(response.text).toBe('This version of govuk-frontend is not supported')
@@ -60,7 +83,7 @@ describe("Templates as a service... again!", () => {
 
       return request(app)
         .post("/component/govuk/3.0.0/govukButton")
-        .send({ text: "Button from an older version" })
+        .send({text: "Button from an older version"})
         .expect(200)
         .then(response => {
           expect(response.text).toBe(expected)
@@ -74,7 +97,7 @@ describe("Templates as a service... again!", () => {
 
       return request(app)
         .post("/component/govuk/3.3.0/govukButton")
-        .send({ text: "Save and continue" })
+        .send({text: "Save and continue"})
         .expect(200)
         .then(response => {
           expect(response.text).toBe(expected)
@@ -82,7 +105,7 @@ describe("Templates as a service... again!", () => {
     })
 
     it("should be able to respond to old an new versions simultaneously", () => {
-      const input = { text: "Button Example", isStartButton: true }
+      const input = {text: "Button Example", isStartButton: true}
       const older = request(app)
         .post("/component/govuk/3.0.0/govukButton")
         .send(input)
@@ -123,7 +146,7 @@ describe("Templates as a service... again!", () => {
 
       return request(app)
         .post("/component/govuk/3.3.0/govukButton")
-        .send({ text: "I Waz 'ere" })
+        .send({text: "I Waz 'ere"})
         .expect(200)
         .then(response => {
           expect(response.text).toBe(expected)
@@ -312,7 +335,7 @@ describe("Templates as a service... again!", () => {
       }
     ]
 
-    it('should return an array of examples with markup and Nunjucks hash', (done) => {
+    it('should return an array of examples with markup and Nunjucks', (done) => {
       return request(app)
         .get("/example-usage/govuk/file-upload")
         .expect(200)
@@ -431,7 +454,7 @@ describe("Templates as a service... again!", () => {
     })
   })
 
-    describe('Root page', () => {
+  describe('Root page', () => {
     it('should return rendered markdown of README.md', (done) => {
       let expected
       fs.readFile(readMe, 'utf8', (err, contents) => {

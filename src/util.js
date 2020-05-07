@@ -119,9 +119,20 @@ const getOrgDetails = org => ({
   },
   'hmrc': {
     label: 'hmrc-frontend',
+    dependencies: ['govuk-frontend'],
     minimumSupported: 1
   }
 })[org]
+
+const getSubDependencies = (dependencyPath, dependencies) => Promise.all(dependencies.map(dependency => {
+  const packageContents = require(`${dependencyPath}/package.json`)
+  const version = packageContents.dependencies[dependency]
+  const trimmedVersion = version
+    .replace('v', '')
+    .replace('^', '')
+    .replace('~', '')
+  return getNpmDependency(dependency, trimmedVersion)
+}))
 
 module.exports = {
   getComponentIdentifier,
@@ -130,5 +141,6 @@ module.exports = {
   getDirectories,
   getNpmDependency,
   getLatestSha,
-  getOrgDetails
+  getOrgDetails,
+  getSubDependencies
 }
