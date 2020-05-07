@@ -7,8 +7,7 @@ const componentController = require('../controllers/componentController')
 const router = express.Router()
 
 router.use('/examples-output', examplesController)
-router.use('/component/govuk', componentController('govuk'))
-router.use('/component/hmrc', componentController('hmrc'))
+router.use('/component', componentController)
 router.use(rootController)
 
 module.exports = router

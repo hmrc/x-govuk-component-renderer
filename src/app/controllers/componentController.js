@@ -21,36 +21,35 @@ const orgs = {
   }
 }
 
-module.exports = (org) => {
+const router = express.Router()
+
+router.post('/:org/:version/:component', jsonParser, async (req, res) => {
+  const {
+    body = {},
+    params: {
+      version,
+      component,
+      org
+    }
+  } = req
   const {label, minimumSupported} = orgs[org]
 
-  const router = express.Router()
-  router.post('/:version/:component', jsonParser, async (req, res) => {
-    const {
-      body = {},
-      params: {
-        version,
-        component
+
+  if (parseFloat(version) < minimumSupported) {
+    res.status(500).send(`This version of ${label} is not supported`)
+  } else {
+    getNpmDependency(label, version).then(path => {
+      const nunjucksPaths = [path, `${path}/views/layouts`]
+
+      const params = JSON.stringify(body, null, 2)
+      try {
+        const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${params})}}`
+        res.send(nunjucks(nunjucksPaths).renderString(nunjucksString))
+      } catch (err) {
+        res.status(500).send(err)
       }
-    } = req
+    })
+  }
+})
 
-
-    if (parseFloat(version) < minimumSupported) {
-      res.status(500).send(`This version of ${label} is not supported`)
-    } else {
-      getNpmDependency(label, version).then(path => {
-        const nunjucksPaths = [path, `${path}/views/layouts`]
-
-        const params = JSON.stringify(body, null, 2)
-        try {
-          const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${params})}}`
-          res.send(nunjucks(nunjucksPaths).renderString(nunjucksString))
-        } catch (err) {
-          res.status(500).send(err)
-        }
-      })
-    }
-  })
-
-  return router
-}
+module.exports = router
