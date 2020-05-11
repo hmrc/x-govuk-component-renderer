@@ -50,11 +50,11 @@ Posting to `/component/hmrc/1.4.0/hmrcPageHeading` with a body of `{"text": "Pag
 
 `GET` from `/example-usage/$$ORG$$/$$COMPONENT_NAME$$` where `$$ORG$$` is the owner of the design system (one of `hmrc` or `govuk`) and `$$COMPONENT_NAME$$` is the name of the component required e.g. `govukSelect`, `govukButton`, `hmrcAccountHeader`
 
-The response will contain the Nunjucks and HTML output of each available example for that component.
+The response will contain the Nunjucks and HTML output of each available example from the design system for that component.
 
 The response structure is as follows:
 
-`
+```
   [
     {
       html: '<div>some markup</div>',
@@ -62,7 +62,31 @@ The response structure is as follows:
       nunjucks: '{% some Nunjucks %}'
     }
   ]
-`
+```
+
+### 4.
+
+`GET` from `/snapshot/$$ORG$$/$$VERSION$$` where `$$ORG$$` is the owner of the design system (one of `hmrc` or `govuk`) and `$$VERSION$$` is the NPM package version (e.g. `1.0.0`, `1.4.0`)
+
+The response will contain the component name, a unique ID, the input params and HTML output of each available example for that component in the github project.
+
+The response structure is as follows:
+
+```
+  [
+    {
+      "componentName": "govukButton",
+      "exampleName": "start link",
+      "exampleId": "button-start-link",
+      "input": {
+        "text": "Start now link button",
+        "href": "/",
+        "isStartButton": true
+      },
+      "output": "<a href=\"/\" role=\"button\" draggable=\"false\" class=\"govuk-button govuk-button--start\" data-module=\"govuk-button\">\n  Start now link button\n  <svg class=\"govuk-button__start-icon\" xmlns=\"http://www.w3.org/2000/svg\" width=\"17.5\" height=\"19\" viewBox=\"0 0 33 40\" aria-hidden=\"true\" focusable=\"false\">\n    <path fill=\"currentColor\" d=\"M0 0h13l20 20-20 20H0l20-20z\"/>\n  </svg>\n</a>"
+    }
+  ]
+```
 
 This is currently hosted at https://template-service-spike.herokuapp.com
 
