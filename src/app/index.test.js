@@ -374,6 +374,30 @@ describe("X-GOVUK Component Renderer", () => {
           done()
         })
     })
+
+    it('should list GOVUK components which have examples', () => {
+      return request(app)
+        .get("/example-usage/govuk")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length > 0).toBe(true)
+          response.body.forEach(item => {
+            expect(item.startsWith('/example-usage/govuk/')).toBe(true)
+          })
+        })
+    })
+
+    it('should list HMRC components which have examples', () => {
+      return request(app)
+        .get("/example-usage/hmrc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length > 0).toBe(true)
+          response.body.forEach(item => {
+            expect(item.startsWith('/example-usage/hmrc/')).toBe(true)
+          })
+        })
+    })
   })
 
   describe('GOVUK template', () => {

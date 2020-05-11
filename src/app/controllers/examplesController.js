@@ -4,7 +4,8 @@ const {
   getDependency,
   getDirectories,
   getSubDependencies,
-  getLatestSha
+  getLatestSha,
+  respondWithError
 } = require('../../util')
 
 const {
@@ -27,18 +28,30 @@ const orgs = {
   }
 }
 
+const getLatestExamples = (name) => getLatestSha(name)
+  .then(sha => getDependency(
+    name,
+    `https://github.com/${name}/tarball/${sha}`,
+    sha
+  ))
+
+router.get('/:org', async (req, res) => {
+  const {componentRootPath, name} = orgs[req.params.org]
+  getLatestExamples(name)
+    .then(path => getDirectories(`${path}/${componentRootPath}`))
+    .then(dirs => {
+      res.send(dirs.map(dir => `${req.originalUrl}/${dir}`))
+    })
+    .catch(respondWithError(res))
+})
+
 router.get('/:org/:component', async (req, res) => {
   const {params: {component, org}} = req
   const {componentRootPath, dependencies, name} = orgs[org]
 
   const componentIdentifier = getComponentIdentifier(undefined, component)
 
-  getLatestSha(name)
-    .then(sha => getDependency(
-      name,
-      `https://github.com/${name}/tarball/${sha}`,
-      sha
-    ))
+  getLatestExamples(name)
     .then(dependencyPath => getSubDependencies(dependencyPath, dependencies)
       .then(subdependecyPaths => ({
         dependencyPath,
@@ -59,11 +72,7 @@ router.get('/:org/:component', async (req, res) => {
     .then(result => {
       res.send(result)
     })
-    .catch(err => {
-      console.error(err.message)
-      console.error(err.stack)
-      res.status(500).send(err)
-    })
+    .catch(respondWithError(res))
 })
 
 module.exports = router

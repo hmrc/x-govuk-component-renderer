@@ -134,6 +134,19 @@ const getSubDependencies = (dependencyPath, dependencies) => Promise.all(depende
   return getNpmDependency(dependency, trimmedVersion)
 }))
 
+const respondWithError = (res) => (err) => {
+  if (err) {
+    console.error(err.message)
+    console.error(err.stack)
+    res.status(500).send(err)
+  } else {
+    console.error('failed but no error provided')
+    res.status(500).send('An error occurred')
+  }
+}
+
+const joinWithCurrentUrl = req => path => `${req.originalUrl.replace(/\/+$/, '')}/${path}`
+
 module.exports = {
   getComponentIdentifier,
   getDataFromFile,
@@ -142,5 +155,7 @@ module.exports = {
   getNpmDependency,
   getLatestSha,
   getOrgDetails,
-  getSubDependencies
+  getSubDependencies,
+  respondWithError,
+  joinWithCurrentUrl
 }

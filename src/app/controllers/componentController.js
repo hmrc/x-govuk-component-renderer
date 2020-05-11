@@ -8,7 +8,10 @@ const {
   getComponentIdentifier,
   getNpmDependency,
   getSubDependencies,
-  getOrgDetails
+  getDirectories,
+  getOrgDetails,
+  respondWithError,
+  joinWithCurrentUrl
 } = require('../../util')
 
 const router = express.Router()
@@ -43,6 +46,7 @@ router.post('/:org/:version/:component', jsonParser, async (req, res) => {
           res.status(500).send(`An error occurred: ${err.message}`)
         }
       })
+      .catch(respondWithError(res))
   }
 })
 
