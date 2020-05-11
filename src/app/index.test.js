@@ -478,6 +478,67 @@ describe("X-GOVUK Component Renderer", () => {
     })
   })
 
+  describe('snapshotter', () => {
+    it('should return a snapshot from a recent GOVUK version', () => {
+      return request(app)
+        .get("/snapshot/govuk/3.6.0")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length).toBe(188)
+          expect(response.body.map(x => x.exampleId).filter(x => x.startsWith('footer-'))).toEqual([
+            'footer-default',
+            'footer-with-meta',
+            'footer-with-custom-meta',
+            'footer-with-meta-links-and-meta-content',
+            'footer-with-custom-meta2',
+            'footer-with-navigation',
+            'footer-GOV.UK',
+            'footer-Three-equal-columns'
+          ])
+        })
+    })
+    it('should return a snapshot from a recent HMRC version', () => {
+      return request(app)
+        .get("/snapshot/hmrc/1.12.0")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length).toBe(42)
+          expect(response.body.map(x => x.exampleId).filter(x => x.startsWith('currency-'))).toEqual([
+            'currency-input-default'
+          ])
+        })
+    })
+    it('should return a snapshot from an older HMRC version', () => {
+      return request(app)
+        .get("/snapshot/hmrc/1.1.0")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length).toBe(38)
+          expect(response.body.map(x => x.exampleId).filter(x => x.startsWith('currency-'))).toEqual([])
+        })
+    })
+    it('should render using the correct govuk-frontend version', () => {
+      return Promise.all([
+        request(app)
+          .get("/snapshot/govuk/3.6.0")
+          .expect(200)
+          .then(response => {
+            const output = response.body.filter(x => x.exampleId === 'button-start-link')[0].output
+            expect(output.includes('role="presentation"')).toBe(false)
+            expect(output.includes('aria-hidden="true"')).toBe(true)
+          }),
+        request(app)
+          .get("/snapshot/govuk/3.5.0")
+          .expect(200)
+          .then(response => {
+            const output = response.body.filter(x => x.exampleId === 'button-start-link')[0].output
+            expect(output.includes('role="presentation"')).toBe(true)
+            expect(output.includes('aria-hidden="true"')).toBe(false)
+          })
+        ])
+    })
+  })
+
   describe('Root page', () => {
     it('should return rendered markdown of README.md', (done) => {
       let expected

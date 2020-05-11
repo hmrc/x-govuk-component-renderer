@@ -60,14 +60,12 @@ router.get('/:org/:component', async (req, res) => {
     )
     .then(paths => {
       const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
-      const examples = getDirectories(componentPath)
 
 
-      return Promise.all(
-        examples.map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
+      return getDirectories(componentPath)
+        .map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
           name: `${componentIdentifier}/${example}`
         }))
-      )
     })
     .then(result => {
       res.send(result)

@@ -1,20 +1,14 @@
-const fs = require('fs')
 const matter = require('gray-matter')
-const {spawn} = require('child_process')
 const axios = require('axios')
 const http = require('https')
 const tar = require('tar')
+const path = require('path')
+const Promise = require('bluebird')
+const fs = Promise.promisifyAll(require('fs'))
 
 const nunjucks = require('./lib/nunjucks')
 
 const {pathFromRoot} = require('./app/constants')
-
-const spawnPromise = (script, args) => new Promise((resolve, reject) => {
-  const process = spawn(script, args)
-  process.on('close', () => {
-    resolve()
-  })
-})
 
 const mkdir = (path) => new Promise((res, rej) => {
   fs.mkdir(path, {recursive: true}, (err) => {
@@ -65,7 +59,7 @@ const getDependency = (name, remote, version) => {
                 .then(path => resolve(path))
                 .catch(err => reject(err))
             } else {
-              const message = `Failed to load ${path} status code was ${statusCode}`
+              const message = `Failed to load ${remote} status code was ${statusCode}`
               console.error(message)
               return reject(new Error(message))
             }
@@ -75,10 +69,11 @@ const getDependency = (name, remote, version) => {
 }
 
 const getComponentIdentifier = (org, component) => component.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`).replace('govuk-', '').replace('hmrc-', '')
+const getComponentSignature = (org, component) => org + component.replace(/^[a-z]/, (g) => `${g[0].toUpperCase()}`).replace(/(-[a-z])/g, (g) => `${g[1].toUpperCase()}`)
 
-const getDirectories = source => fs.readdirSync(source, {withFileTypes: true})
+const getDirectories = (source) => fs.readdirAsync(source, {withFileTypes: true}).then(files => files
   .filter(dirent => dirent.isDirectory())
-  .map(dirent => dirent.name)
+  .map(dirent => dirent.name))
 
 const getDataFromFile = (file, paths, meta) => new Promise((resolve, reject) => {
   fs.readFile(file, 'utf8', (err, contents) => {
@@ -97,13 +92,11 @@ const getDataFromFile = (file, paths, meta) => new Promise((resolve, reject) => 
   })
 })
 
-const getNpmDependency = async (dependency, version) => {
-  return await getDependency(
-    dependency,
-    `https://registry.npmjs.org/${dependency}/-/${dependency}-${version}.tgz`,
-    version
-  )
-}
+const getNpmDependency = (dependency, version) => getDependency(
+  dependency,
+  `https://registry.npmjs.org/${dependency}/-/${dependency}-${version}.tgz`,
+  version
+)
 
 const getLatestSha = async (repo, branch = 'master') => {
   const token = process.env.TOKEN
@@ -112,13 +105,19 @@ const getLatestSha = async (repo, branch = 'master') => {
   return sha
 }
 
-const getOrgDetails = org => ({
+const getOrgDetails = (org, version) => ({
   'govuk': {
+    code: 'govuk',
     label: 'govuk-frontend',
+    githubUrl: `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
+    componentDir: 'src/govuk/components',
     minimumSupported: 3
   },
   'hmrc': {
+    code: 'hmrc',
     label: 'hmrc-frontend',
+    githubUrl: `https://github.com/hmrc/hmrc-frontend/tarball/v${version}`,
+    componentDir: 'src/components',
     dependencies: ['govuk-frontend'],
     minimumSupported: 1
   }
@@ -147,8 +146,22 @@ const respondWithError = (res) => (err) => {
 
 const joinWithCurrentUrl = req => path => `${req.originalUrl.replace(/\/+$/, '')}/${path}`
 
+const versionIsCompatible = (version, orgDetails) => parseFloat(version) >= orgDetails.minimumSupported
+
+const getConfiguredNunjucksForOrganisation = (orgDetails, version) => getNpmDependency(orgDetails.label, version)
+  .then(path => getSubDependencies(path, orgDetails.dependencies || []).then(dependencyPaths => [path, `${path}/views/layouts`, ...dependencyPaths]))
+  .then(nunjucksPaths => nunjucks(nunjucksPaths))
+
+const renderComponent = (org, component, params, nunjucks) => {
+  const preparedParams = JSON.stringify(params || {}, null, 2)
+  const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`
+
+  return nunjucks.renderString(nunjucksString)
+}
+
 module.exports = {
   getComponentIdentifier,
+  getComponentSignature,
   getDataFromFile,
   getDependency,
   getDirectories,
@@ -157,5 +170,7 @@ module.exports = {
   getOrgDetails,
   getSubDependencies,
   respondWithError,
-  joinWithCurrentUrl
+  getConfiguredNunjucksForOrganisation,
+  versionIsCompatible,
+  renderComponent
 }
