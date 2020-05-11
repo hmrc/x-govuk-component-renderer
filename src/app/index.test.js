@@ -2,7 +2,7 @@ const request = require("supertest")
 const fs = require('fs')
 const marked = require('marked')
 
-const { readMe } = require('../constants')
+const {readMe} = require('./constants')
 
 const app = require("./")
 
@@ -11,13 +11,13 @@ expectHtmlToMatch = (expected, actual) => {
   expect(normalise(expected)).toBe(normalise(actual))
 }
 
-describe("Templates as a service... again!", () => {
+describe("X-GOVUK Component Renderer", () => {
 
-  describe('/hmrc/:version/components/:component', () => {
+  describe('HMRC component endpoint', () => {
     it("should return 500 and an error if the version requested is older than 1.0.0", () => {
       return request(app)
-        .post("/hmrc/0.1.2/components/hmrcPageHeading")
-        .send({ text: "Page heading from an unsupported version" })
+        .post("/component/hmrc/0.1.2/hmrcPageHeading")
+        .send({text: "Page heading from an unsupported version"})
         .expect(500)
         .then(response => {
           expect(response.text).toBe('This version of hmrc-frontend is not supported')
@@ -29,7 +29,7 @@ describe("Templates as a service... again!", () => {
   <h1 class="govuk-heading-xl">This heading</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
 `
       return request(app)
-        .post("/hmrc/1.4.0/components/hmrcPageHeading")
+        .post("/component/hmrc/1.4.0/hmrcPageHeading")
         .send({
           text: "This heading",
           section: 'That section'
@@ -40,13 +40,36 @@ describe("Templates as a service... again!", () => {
         })
     })
 
+    it("should return a currencyInput (which requires govuk-frontend)", () => {
+      const expected = `<div class="govuk-form-group">
+	<div class="hmrc-currency-input__wrapper">
+		<span class="hmrc-currency-input__unit" aria-hidden="true">£</span>
+		<input
+            class="govuk-input"
+            id="mpqzobgghvhv"
+            name=""
+            type="text"            inputmode="decimal"/>
+
+    </div>
+	</div>`
+      return request(app)
+        .post("/component/hmrc/1.12.0/hmrcCurrencyInput")
+        .send({
+          "id": "mpqzobgghvhv"
+        })
+        .expect(200)
+        .then(response => {
+          expectHtmlToMatch(response.text, expected)
+        })
+    })
+
   })
 
-  describe('/govuk/:version/components/:component', () => {
+  describe('GOVUK component', () => {
     it("should return 500 and an error if the version requested is older than 3.0.0", () => {
       return request(app)
-        .post("/govuk/2.3.4/components/govukButton")
-        .send({ text: "Button from an unsupported version" })
+        .post("/component/govuk/2.3.4/govukButton")
+        .send({text: "Button from an unsupported version"})
         .expect(500)
         .then(response => {
           expect(response.text).toBe('This version of govuk-frontend is not supported')
@@ -59,8 +82,8 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/3.0.0/components/govukButton")
-        .send({ text: "Button from an older version" })
+        .post("/component/govuk/3.0.0/govukButton")
+        .send({text: "Button from an older version"})
         .expect(200)
         .then(response => {
           expect(response.text).toBe(expected)
@@ -73,12 +96,47 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukButton")
-        .send({ text: "Save and continue" })
+        .post("/component/govuk/3.3.0/govukButton")
+        .send({text: "Save and continue"})
         .expect(200)
         .then(response => {
           expect(response.text).toBe(expected)
         })
+    })
+
+    it("should be able to respond to old an new versions simultaneously", () => {
+      const input = {text: "Button Example", isStartButton: true}
+      const older = request(app)
+        .post("/component/govuk/3.0.0/govukButton")
+        .send(input)
+        .expect(200)
+        .then(response => {
+          expect(response.text.startsWith('<button type="submit" class="govuk-button')).toBe(true)
+          expect(response.text.includes('role="presentation"')).toBe(true)
+          expect(response.text.includes('aria-hidden="true"')).toBe(false)
+        })
+
+      const medium = request(app)
+        .post("/component/govuk/3.3.0/govukButton")
+        .send(input)
+        .expect(200)
+        .then(response => {
+          expect(response.text.startsWith('<button class="govuk-button')).toBe(true)
+          expect(response.text.includes('role="presentation"')).toBe(true)
+          expect(response.text.includes('aria-hidden="true"')).toBe(false)
+        })
+
+      const newer = request(app)
+        .post("/component/govuk/3.6.0/govukButton")
+        .send(input)
+        .expect(200)
+        .then(response => {
+          expect(response.text.startsWith('<button class="govuk-button')).toBe(true)
+          expect(response.text.includes('role="presentation"')).toBe(false)
+          expect(response.text.includes('aria-hidden="true"')).toBe(true)
+        })
+
+      return Promise.all([older, medium, newer])
     })
 
     it("should return the text I provided", () => {
@@ -87,8 +145,8 @@ describe("Templates as a service... again!", () => {
 </button>`
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukButton")
-        .send({ text: "I Waz 'ere" })
+        .post("/component/govuk/3.3.0/govukButton")
+        .send({text: "I Waz 'ere"})
         .expect(200)
         .then(response => {
           expect(response.text).toBe(expected)
@@ -139,7 +197,7 @@ describe("Templates as a service... again!", () => {
 </div>`
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukDateInput")
+        .post("/component/govuk/3.3.0/govukDateInput")
         .send({
           fieldset: {
             legend: {
@@ -222,7 +280,7 @@ describe("Templates as a service... again!", () => {
 `
 
       return request(app)
-        .post("/govuk/3.3.0/components/govukFooter")
+        .post("/component/govuk/3.3.0/govukFooter")
         .send()
         .expect(200)
         .then(response => {
@@ -230,8 +288,8 @@ describe("Templates as a service... again!", () => {
         })
     })
   })
-  
-  describe('/examples-output/:org/:component', () => {
+
+  describe('Examples output', () => {
     const expected = [
       {
         html: `<div class=\"govuk-form-group\">
@@ -240,7 +298,6 @@ describe("Templates as a service... again!", () => {
   </label>
   <input class=\"govuk-file-upload\" id=\"file-upload-1\" name=\"file-upload-1\" type=\"file\">
 </div>`,
-        md5: '7a23adc1045d2b75bde07ef81d61c469',
         name: 'file-upload/default',
         nunjucks: `{% from \"govuk/components/file-upload/macro.njk\" import govukFileUpload %}
 
@@ -262,7 +319,6 @@ describe("Templates as a service... again!", () => {
   </span>
   <input class=\"govuk-file-upload govuk-file-upload--error\" id=\"file-upload-1\" name=\"file-upload-1\" type=\"file\" aria-describedby=\"file-upload-1-error\">
 </div>`,
-        md5: '62ed65b2964b40280c34d3912f1786e5',
         name: 'file-upload/error',
         nunjucks: `{% from \"govuk/components/file-upload/macro.njk\" import govukFileUpload %}
 
@@ -279,19 +335,19 @@ describe("Templates as a service... again!", () => {
       }
     ]
 
-    it('should return an array of examples with markup and md5 hash', (done) => {
+    it('should return an array of examples with markup and Nunjucks', (done) => {
       return request(app)
-        .get("/examples-output/govuk/file-upload")
+        .get("/example-usage/govuk/file-upload")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual(expected)
           done()
         })
     })
-    
+
     it('should work if the request uses the macro name', (done) => {
       return request(app)
-        .get("/examples-output/govuk/govukFileUpload")
+        .get("/example-usage/govuk/govukFileUpload")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual(expected)
@@ -301,19 +357,18 @@ describe("Templates as a service... again!", () => {
 
     it('should return a 500 if requested component does not exist', () => {
       return request(app)
-        .get("/examples-output/govuk/foo")
+        .get("/example-usage/govuk/foo")
         .expect(500)
     })
 
     it('should work with HMRC components', (done) => {
       return request(app)
-        .get("/examples-output/hmrc/green-button")
+        .get("/example-usage/hmrc/green-button")
         .expect(200)
         .then(response => {
           expect(response.body).toEqual([{
             name: "green-button/example",
             html: "<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n<button class=\"govuk-button govuk-button--start\" data-module=\"govuk-button\">\n  Start now\n  <svg class=\"govuk-button__start-icon\" xmlns=\"http://www.w3.org/2000/svg\" width=\"17.5\" height=\"19\" viewBox=\"0 0 33 40\" role=\"presentation\" focusable=\"false\">\n    <path fill=\"currentColor\" d=\"M0 0h13l20 20-20 20H0l20-20z\"/>\n  </svg>\n</button>",
-            md5: "bdb85a4bb9fdc85856ee5c24ab1f713e",
             nunjucks: "{% from \"govuk/components/button/macro.njk\" import govukButton %}\n\n<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n{{ govukButton({\n  text: \"Start now\",\n  isStartButton: true\n}) }}"
           }])
           done()
@@ -321,7 +376,85 @@ describe("Templates as a service... again!", () => {
     })
   })
 
-  describe('/', () => {
+  describe('GOVUK template', () => {
+    it("should return 500 and an error if the version requested is older than 3.0.0", () => {
+      return request(app)
+        .post("/template/govuk/2.3.4/default")
+        .send({})
+        .expect(500)
+        .then(response => {
+          expect(response.text).toBe('This version of govuk-frontend is not supported')
+        })
+    })
+
+    it("should reject unknown templates", () => {
+      return request(app)
+        .post("/template/govuk/3.6.0/some-template")
+        .send({})
+        .expect(400)
+        .then(response => {
+          expect(response.text).toBe('Currently only "govuk" and the "default" template is supported')
+        })
+    })
+
+    it("should render govuk template with blocks and variables", () => {
+      return request(app)
+        .post("/template/govuk/3.6.0/default")
+        .send({
+          variables: {
+            htmlLang: "abc",
+            htmlClasses: "def",
+            assetPath: "/ghi/jkl",
+            bodyAttributes: {
+              one: 1,
+              "data-two": "this-is two"
+            }
+          },
+          blocks: {
+            beforeContent: "abcdefghijklmnop",
+            pageTitle: "This is the title",
+            headIcons: "headIcons",
+            skipLink: "skipLink",
+            header: "the header",
+            main: "the main",
+            footer: "The footer"
+          }
+        })
+        .expect(200)
+        .then(response => {
+          expectHtmlToMatch(response.text, `<!DOCTYPE html>
+<html lang="abc" class="govuk-template def">
+
+<head>
+\t<meta charset="utf-8">
+\t<title>This is the title</title>
+\t<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+\t<meta name="theme-color" content="#0b0c0c">
+
+\t<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+\theadIcons
+
+
+\t<meta property="og:image" content="/ghi/jkl/images/govuk-opengraph-image.png">
+</head>
+
+<body class="govuk-template__body " one="1" data-two="this-is two">
+\t<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
+\tskipLink
+\tthe header
+\tthe main
+\tThe footer
+</body>
+
+</html>
+`.replace(/\s+/g, '\n'))
+        })
+    })
+  })
+
+  describe('Root page', () => {
     it('should return rendered markdown of README.md', (done) => {
       let expected
       fs.readFile(readMe, 'utf8', (err, contents) => {
@@ -338,10 +471,10 @@ describe("Templates as a service... again!", () => {
     })
   })
 
-  describe('/invalid-path', () => {
+  describe('Unknown paths', () => {
     it('should return a 404', () => {
       return request(app)
-        .get("/invalid-path")
+        .get("/unknown-path")
         .expect(404)
     })
   })

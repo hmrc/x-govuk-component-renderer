@@ -3,67 +3,67 @@ const {
   getDataFromFile,
   getDependency,
   getDirectories,
-  getNpmDependency,
+  getSubDependencies,
   getLatestSha
 } = require('../../util')
 
 const {
-  govukDesignSystemRoot,
-  hmrcDesignSystemRoot,
   substitutionMap
-} = require('../../constants')
+} = require('../constants')
+
+const express = require('express')
+const router = express.Router()
 
 const orgs = {
   'govuk': {
     name: 'alphagov/govuk-design-system',
-    rootPath: govukDesignSystemRoot,
-    componentRootPath: `${govukDesignSystemRoot}/src/components`,
+    componentRootPath: `src/components`,
     dependencies: ['govuk-frontend']
   },
   'hmrc': {
     name: 'hmrc/design-system',
-    rootPath: hmrcDesignSystemRoot,
-    componentRootPath: `${hmrcDesignSystemRoot}/src/examples`,
+    componentRootPath: `src/examples`,
     dependencies: ['govuk-frontend', 'hmrc-frontend']
   }
 }
 
-module.exports = async (req, res) => {
-  const { params: { component, org } } = req
-  const { componentRootPath, dependencies, name, rootPath } = orgs[org]
+router.get('/:org/:component', async (req, res) => {
+  const {params: {component, org}} = req
+  const {componentRootPath, dependencies, name} = orgs[org]
 
-  const componentIdentifier = getComponentIdentifier(component)
-  const componentPath = `${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
+  const componentIdentifier = getComponentIdentifier(undefined, component)
 
-  const sha = await getLatestSha(name)
-  await getDependency(
-    name,
-    `https://github.com/${name}/tarball/${sha}`,
-    sha
-  )
-
-  for (const dependency of dependencies) {
-    const version = require(`${rootPath}/package.json`).dependencies[dependency]
-    const trimmedVersion = version
-      .replace('v', '')
-      .replace('^', '')
-      .replace('~', '')
-    await getNpmDependency(dependency, trimmedVersion)
-  }
-
-  try {
-    const examples = getDirectories(componentPath)
-    const output = []
-    examples.forEach(example => {
-      output.push(getDataFromFile(`${componentPath}/${example}/index.njk`, {
-        name: `${componentIdentifier}/${example}`
+  getLatestSha(name)
+    .then(sha => getDependency(
+      name,
+      `https://github.com/${name}/tarball/${sha}`,
+      sha
+    ))
+    .then(dependencyPath => getSubDependencies(dependencyPath, dependencies)
+      .then(subdependecyPaths => ({
+        dependencyPath,
+        subdependecyPaths
       }))
+    )
+    .then(paths => {
+      const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
+      const examples = getDirectories(componentPath)
+
+
+      return Promise.all(
+        examples.map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
+          name: `${componentIdentifier}/${example}`
+        }))
+      )
     })
-      
-   Promise.all(output).then(result => {
-     res.send(result)
-   })
-  } catch (err) {
-    res.status(500).send(err)
-  }
-}
+    .then(result => {
+      res.send(result)
+    })
+    .catch(err => {
+      console.error(err.message)
+      console.error(err.stack)
+      res.status(500).send(err)
+    })
+})
+
+module.exports = router
