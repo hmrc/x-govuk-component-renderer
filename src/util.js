@@ -2,7 +2,6 @@ const matter = require('gray-matter')
 const axios = require('axios')
 const http = require('https')
 const tar = require('tar')
-const path = require('path')
 const Promise = require('bluebird')
 const fs = Promise.promisifyAll(require('fs'))
 
@@ -98,12 +97,29 @@ const getNpmDependency = (dependency, version) => getDependency(
   version
 )
 
-const getLatestSha = async (repo, branch = 'master') => {
-  const token = process.env.TOKEN
-  const headers = token ? {headers: {Authorization: `token ${token}`}} : undefined
-  const {data: {sha}} = await axios.get(`https://api.github.com/repos/${repo}/commits/${branch}`, headers)
-  return sha
-}
+const getLatestSha = (() => {
+  const fifteenMinutesInMillis = 1000 * 60 * 15
+  const cache = {}
+  const getCacheKey = (repo, branch) => `${repo}:::${branch}`
+  const addToCache = (key, result) => {
+    cache[key] = result
+    setTimeout(() => {
+      delete cache[key]
+    }, fifteenMinutesInMillis)
+  }
+  return async (repo, branch = 'master') => {
+    const cacheKey = getCacheKey(repo, branch);
+    if (cache[cacheKey]) {
+      console.log('Using shar from cache', cacheKey)
+      return cache[cacheKey]
+    }
+    const token = process.env.TOKEN
+    const headers = token ? {headers: {Authorization: `token ${token}`}} : undefined
+    const {data: {sha}} = await axios.get(`https://api.github.com/repos/${repo}/commits/${branch}`, headers)
+    addToCache(cacheKey, sha)
+    return sha
+  }
+})()
 
 const getOrgDetails = (org, version) => ({
   'govuk': {
