@@ -11,6 +11,8 @@ expectHtmlToMatch = (expected, actual) => {
   expect(normalise(expected)).toBe(normalise(actual))
 }
 
+jest.setTimeout(10000)
+
 describe("X-GOVUK Component Renderer", () => {
 
   describe('HMRC component endpoint', () => {
@@ -368,7 +370,7 @@ describe("X-GOVUK Component Renderer", () => {
         .then(response => {
           expect(response.body).toEqual([{
             name: "green-button/example",
-            html: "<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n<button class=\"govuk-button govuk-button--start\" data-module=\"govuk-button\">\n  Start now\n  <svg class=\"govuk-button__start-icon\" xmlns=\"http://www.w3.org/2000/svg\" width=\"17.5\" height=\"19\" viewBox=\"0 0 33 40\" role=\"presentation\" focusable=\"false\">\n    <path fill=\"currentColor\" d=\"M0 0h13l20 20-20 20H0l20-20z\"/>\n  </svg>\n</button>",
+            html: "<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n<button class=\"govuk-button govuk-button--start\" data-module=\"govuk-button\">\n  Start now\n  <svg class=\"govuk-button__start-icon\" xmlns=\"http://www.w3.org/2000/svg\" width=\"17.5\" height=\"19\" viewBox=\"0 0 33 40\" aria-hidden=\"true\" focusable=\"false\">\n    <path fill=\"currentColor\" d=\"M0 0h13l20 20-20 20H0l20-20z\"/>\n  </svg>\n</button>",
             nunjucks: "{% from \"govuk/components/button/macro.njk\" import govukButton %}\n\n<h1 class=\"govuk-heading-xl\">Check your National Insurance record</h1>\n\n<p class=\"govuk-body\">You can check your National Insurance record online to see:</p>\n\n<ul class=\"govuk-list govuk-list--bullet\">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href=\"#\" class=\"govuk-link\">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href=\"#\" class=\"govuk-link\">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class=\"govuk-body\">\n  Your online record does not cover how much <a href=\"#\" class=\"govuk-link\">State Pension you’re likely to get</a>.\n</p>\n\n{{ govukButton({\n  text: \"Start now\",\n  isStartButton: true\n}) }}"
           }])
           done()
@@ -384,6 +386,42 @@ describe("X-GOVUK Component Renderer", () => {
           response.body.forEach(item => {
             expect(item.startsWith('/example-usage/govuk/')).toBe(true)
           })
+        })
+    })
+
+    it('should list HMRC components which have examples', () => {
+      return request(app)
+        .get("/example-usage/hmrc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length > 0).toBe(true)
+          response.body.forEach(item => {
+            expect(item.startsWith('/example-usage/hmrc/')).toBe(true)
+          })
+        })
+    })
+
+    it('should not add double forward slashes', () => {
+      return request(app)
+        .get("/example-usage/hmrc/")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length > 0).toBe(true)
+          response.body.forEach(item => {
+            expect(item.startsWith('/example-usage/hmrc//')).toBe(false)
+          })
+        })
+    })
+
+    it('should list the available organisations', () => {
+      return request(app)
+        .get("/example-usage/")
+        .expect(200)
+        .then(response => {
+          expect(response.body).toEqual([
+            '/example-usage/govuk',
+            '/example-usage/hmrc'
+          ])
         })
     })
 
@@ -535,7 +573,7 @@ describe("X-GOVUK Component Renderer", () => {
             expect(output.includes('role="presentation"')).toBe(true)
             expect(output.includes('aria-hidden="true"')).toBe(false)
           })
-        ])
+      ])
     })
   })
 

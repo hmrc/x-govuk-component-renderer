@@ -2,7 +2,6 @@ const matter = require('gray-matter')
 const axios = require('axios')
 const http = require('https')
 const tar = require('tar')
-const path = require('path')
 const Promise = require('bluebird')
 const fs = Promise.promisifyAll(require('fs'))
 
@@ -10,26 +9,14 @@ const nunjucks = require('./lib/nunjucks')
 
 const {pathFromRoot} = require('./app/constants')
 
-const mkdir = (path) => new Promise((res, rej) => {
-  fs.mkdir(path, {recursive: true}, (err) => {
-    if (err) {
-      rej(err)
-    } else {
-      res()
-    }
-  })
-})
+const mkdir = (path) => fs.mkdirAsync(path, {recursive: true})
 
-const dirExistsAndNotEmpty = (path) => new Promise((res, rej) => {
-  fs.readdir(path, function (err, contents) {
-    if (err && err.code === 'ENOENT') {
-      res(false)
-    } else if (err) {
-      rej(err)
-    } else {
-      res(contents.length > 0)
-    }
-  })
+const dirExistsAndNotEmpty = (path) => fs.readdirAsync(path).then(contents => contents.length > 0).catch(err => {
+  if (err.code === 'ENOENT') {
+    return false
+  } else {
+    throw err
+  }
 })
 
 const getDependency = (name, remote, version) => {
@@ -75,21 +62,13 @@ const getDirectories = (source) => fs.readdirAsync(source, {withFileTypes: true}
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name))
 
-const getDataFromFile = (file, paths, meta) => new Promise((resolve, reject) => {
-  fs.readFile(file, 'utf8', (err, contents) => {
-    if (err) {
-      console.error('error reading', file)
-      reject(err)
-    } else {
-      const nj = matter(contents).content
-      const html = nunjucks(paths).renderString(nj).trim()
-      resolve({
-        ...meta,
-        html,
-        nunjucks: nj.trim(),
-      })
-    }
-  })
+const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then(contents => {
+  const nj = matter(contents).content
+  const html = nunjucks(paths).renderString(nj).trim()
+  return {
+    html,
+    nunjucks: nj.trim(),
+  }
 })
 
 const getNpmDependency = (dependency, version) => getDependency(
@@ -98,12 +77,28 @@ const getNpmDependency = (dependency, version) => getDependency(
   version
 )
 
-const getLatestSha = async (repo, branch = 'master') => {
-  const token = process.env.TOKEN
-  const headers = token ? {headers: {Authorization: `token ${token}`}} : undefined
-  const {data: {sha}} = await axios.get(`https://api.github.com/repos/${repo}/commits/${branch}`, headers)
-  return sha
-}
+const getLatestSha = (() => {
+  const fifteenMinutesInMillis = 1000 * 60 * 15
+  const cache = {}
+  const getCacheKey = (repo, branch) => `${repo}:::${branch}`
+  const addToCache = (key, result) => {
+    cache[key] = result
+    setTimeout(() => {
+      delete cache[key]
+    }, fifteenMinutesInMillis)
+  }
+  return async (repo, branch = 'master') => {
+    const cacheKey = getCacheKey(repo, branch);
+    if (cache[cacheKey]) {
+      return cache[cacheKey]
+    }
+    const token = process.env.TOKEN
+    const headers = token ? {headers: {Authorization: `token ${token}`}} : undefined
+    const {data: {sha}} = await axios.get(`https://api.github.com/repos/${repo}/commits/${branch}`, headers)
+    addToCache(cacheKey, sha)
+    return sha
+  }
+})()
 
 const getOrgDetails = (org, version) => ({
   'govuk': {
@@ -144,7 +139,7 @@ const respondWithError = (res) => (err) => {
   }
 }
 
-const joinWithCurrentUrl = req => path => `${req.originalUrl.replace(/\/+$/, '')}/${path}`
+const joinWithCurrentUrl = (req, path) => `${req.originalUrl.replace(/\/+$/, '')}/${path}`
 
 const versionIsCompatible = (version, orgDetails) => parseFloat(version) >= orgDetails.minimumSupported
 
@@ -172,5 +167,6 @@ module.exports = {
   respondWithError,
   getConfiguredNunjucksForOrganisation,
   versionIsCompatible,
-  renderComponent
+  renderComponent,
+  joinWithCurrentUrl
 }
