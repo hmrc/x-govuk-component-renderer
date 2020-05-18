@@ -14,17 +14,20 @@ const {
 } = require('../constants')
 
 const express = require('express')
+const path = require('path')
 const router = express.Router()
 
 const orgs = {
   'govuk': {
     name: 'alphagov/govuk-design-system',
     componentRootPath: `src/components`,
+    nunjucksPaths: ['views/layouts'],
     dependencies: ['govuk-frontend']
   },
   'hmrc': {
     name: 'hmrc/design-system',
     componentRootPath: `src/examples`,
+    nunjucksPaths: ['lib/template-hacks'],
     dependencies: ['govuk-frontend', 'hmrc-frontend']
   }
 }
@@ -52,7 +55,7 @@ router.get('/:org', async (req, res) => {
 
 router.get('/:org/:component', async (req, res) => {
   const {params: {component, org}} = req
-  const {componentRootPath, dependencies, name} = orgs[org]
+  const {componentRootPath, dependencies, name, nunjucksPaths} = orgs[org]
 
   const componentIdentifier = getComponentIdentifier(undefined, component)
 
@@ -60,12 +63,11 @@ router.get('/:org/:component', async (req, res) => {
     .then(dependencyPath => getSubDependencies(dependencyPath, dependencies)
       .then(subdependecyPaths => ({
         dependencyPath,
-        subdependecyPaths
+        subdependecyPaths: [...subdependecyPaths, ...nunjucksPaths.map(x => path.join(dependencyPath, x))]
       }))
     )
     .then(paths => {
       const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
-
 
       return getDirectories(componentPath)
         .map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths).catch(err => {

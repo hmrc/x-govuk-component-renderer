@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest",
-    "dev": "nodemon server.js --ignore 'src/depencies/**/*.js'"
+    "dev": "nodemon server.js --ignore 'src/dependencies/**/*'"
   },
   "author": "",
   "license": "ISC",
