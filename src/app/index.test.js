@@ -11,6 +11,8 @@ expectHtmlToMatch = (expected, actual) => {
   expect(normalise(expected)).toBe(normalise(actual))
 }
 
+jest.setTimeout(10000)
+
 describe("X-GOVUK Component Renderer", () => {
 
   describe('HMRC component endpoint', () => {
@@ -398,6 +400,42 @@ describe("X-GOVUK Component Renderer", () => {
           })
         })
     })
+
+    it('should not add double forward slashes', () => {
+      return request(app)
+        .get("/example-usage/hmrc/")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length > 0).toBe(true)
+          response.body.forEach(item => {
+            expect(item.startsWith('/example-usage/hmrc//')).toBe(false)
+          })
+        })
+    })
+
+    it('should list the available organisations', () => {
+      return request(app)
+        .get("/example-usage/")
+        .expect(200)
+        .then(response => {
+          expect(response.body).toEqual([
+            '/example-usage/govuk',
+            '/example-usage/hmrc'
+          ])
+        })
+    })
+
+    it('should list HMRC components which have examples', () => {
+      return request(app)
+        .get("/example-usage/hmrc")
+        .expect(200)
+        .then(response => {
+          expect(response.body.length > 0).toBe(true)
+          response.body.forEach(item => {
+            expect(item.startsWith('/example-usage/hmrc/')).toBe(true)
+          })
+        })
+    })
   })
 
   describe('GOVUK template', () => {
@@ -535,7 +573,7 @@ describe("X-GOVUK Component Renderer", () => {
             expect(output.includes('role="presentation"')).toBe(true)
             expect(output.includes('aria-hidden="true"')).toBe(false)
           })
-        ])
+      ])
     })
   })
 

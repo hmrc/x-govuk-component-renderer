@@ -90,7 +90,6 @@ const getLatestSha = (() => {
   return async (repo, branch = 'master') => {
     const cacheKey = getCacheKey(repo, branch);
     if (cache[cacheKey]) {
-      console.log('Using shar from cache', cacheKey)
       return cache[cacheKey]
     }
     const token = process.env.TOKEN
@@ -140,7 +139,7 @@ const respondWithError = (res) => (err) => {
   }
 }
 
-const joinWithCurrentUrl = req => path => `${req.originalUrl.replace(/\/+$/, '')}/${path}`
+const joinWithCurrentUrl = (req, path) => `${req.originalUrl.replace(/\/+$/, '')}/${path}`
 
 const versionIsCompatible = (version, orgDetails) => parseFloat(version) >= orgDetails.minimumSupported
 
@@ -168,5 +167,6 @@ module.exports = {
   respondWithError,
   getConfiguredNunjucksForOrganisation,
   versionIsCompatible,
-  renderComponent
+  renderComponent,
+  joinWithCurrentUrl
 }

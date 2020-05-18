@@ -5,7 +5,8 @@ const {
   getDirectories,
   getSubDependencies,
   getLatestSha,
-  respondWithError
+  respondWithError,
+  joinWithCurrentUrl
 } = require('../../util')
 
 const {
@@ -35,12 +36,16 @@ const getLatestExamples = (name) => getLatestSha(name)
     sha
   ))
 
+router.get('/', async (req, res) => {
+  res.send(Object.keys(orgs).map(orgName => joinWithCurrentUrl(req, orgName)))
+})
+
 router.get('/:org', async (req, res) => {
   const {componentRootPath, name} = orgs[req.params.org]
   getLatestExamples(name)
     .then(path => getDirectories(`${path}/${componentRootPath}`))
     .then(dirs => {
-      res.send(dirs.map(dir => `${req.originalUrl}/${dir}`))
+      res.send(dirs.map(dir => joinWithCurrentUrl(req, dir)))
     })
     .catch(respondWithError(res))
 })
@@ -63,18 +68,14 @@ router.get('/:org/:component', async (req, res) => {
 
 
       return getDirectories(componentPath)
-        .map(example => {
-          const file = `${componentPath}/${example}/index.njk`;
-          console.log('getting from file', file)
-          return getDataFromFile(file, paths.subdependecyPaths).catch(err => {
-            const preparedMessage = 'This example couldn\'t be prepared - ' + err.message
-            return {
-              html: preparedMessage,
-              nunjucks: preparedMessage
-            }
-          })
-            .then(htmlAndNunjucks => ({name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks}))
+        .map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths).catch(err => {
+          const preparedMessage = 'This example couldn\'t be prepared - ' + err.message
+          return {
+            html: preparedMessage,
+            nunjucks: preparedMessage
+          }
         })
+          .then(htmlAndNunjucks => ({name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks})))
     })
     .then(result => {
       res.send(result)
