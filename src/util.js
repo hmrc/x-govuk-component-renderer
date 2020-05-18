@@ -9,26 +9,14 @@ const nunjucks = require('./lib/nunjucks')
 
 const {pathFromRoot} = require('./app/constants')
 
-const mkdir = (path) => new Promise((res, rej) => {
-  fs.mkdir(path, {recursive: true}, (err) => {
-    if (err) {
-      rej(err)
-    } else {
-      res()
-    }
-  })
-})
+const mkdir = (path) => fs.mkdirAsync(path, {recursive: true})
 
-const dirExistsAndNotEmpty = (path) => new Promise((res, rej) => {
-  fs.readdir(path, function (err, contents) {
-    if (err && err.code === 'ENOENT') {
-      res(false)
-    } else if (err) {
-      rej(err)
-    } else {
-      res(contents.length > 0)
-    }
-  })
+const dirExistsAndNotEmpty = (path) => fs.readdirAsync(path).then(contents => contents.length > 0).catch(err => {
+  if (err.code === 'ENOENT') {
+    return false
+  } else {
+    throw err
+  }
 })
 
 const getDependency = (name, remote, version) => {
