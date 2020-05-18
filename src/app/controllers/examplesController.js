@@ -63,9 +63,18 @@ router.get('/:org/:component', async (req, res) => {
 
 
       return getDirectories(componentPath)
-        .map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths, {
-          name: `${componentIdentifier}/${example}`
-        }))
+        .map(example => {
+          const file = `${componentPath}/${example}/index.njk`;
+          console.log('getting from file', file)
+          return getDataFromFile(file, paths.subdependecyPaths).catch(err => {
+            const preparedMessage = 'This example couldn\'t be prepared - ' + err.message
+            return {
+              html: preparedMessage,
+              nunjucks: preparedMessage
+            }
+          })
+            .then(htmlAndNunjucks => ({name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks}))
+        })
     })
     .then(result => {
       res.send(result)

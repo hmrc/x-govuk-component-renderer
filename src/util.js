@@ -74,21 +74,13 @@ const getDirectories = (source) => fs.readdirAsync(source, {withFileTypes: true}
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name))
 
-const getDataFromFile = (file, paths, meta) => new Promise((resolve, reject) => {
-  fs.readFile(file, 'utf8', (err, contents) => {
-    if (err) {
-      console.error('error reading', file)
-      reject(err)
-    } else {
-      const nj = matter(contents).content
-      const html = nunjucks(paths).renderString(nj).trim()
-      resolve({
-        ...meta,
-        html,
-        nunjucks: nj.trim(),
-      })
-    }
-  })
+const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then(contents => {
+  const nj = matter(contents).content
+  const html = nunjucks(paths).renderString(nj).trim()
+  return {
+    html,
+    nunjucks: nj.trim(),
+  }
 })
 
 const getNpmDependency = (dependency, version) => getDependency(
