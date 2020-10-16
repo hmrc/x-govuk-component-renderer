@@ -1,5 +1,6 @@
 ARG NODE_VERSION
-FROM node:${NODE_VERSION:-10.15.1}-slim
+ARG DOCKERHUB=dockerhub.tax.service.gov.uk
+FROM ${DOCKERHUB}/node:${NODE_VERSION:-10.15.1}-slim
 
 WORKDIR /x-govuk-component-renderer
 
