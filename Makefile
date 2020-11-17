@@ -26,7 +26,7 @@ prep_version_incrementor:
 	@echo "Installing version-incrementor with pipenv"
 	@pip install pipenv --upgrade
 	@pipenv --python $(PYTHON_VERSION)
-	@pipenv run pip install -i https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple version-incrementor==0.7
+	@pipenv run pip install -i https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple 'version-incrementor<2'
 
 clean: ## Remove the docker image
 	@echo '********** Cleaning up ************'
