@@ -1,3 +1,5 @@
+const express = require('express');
+const path = require('path');
 const {
   getComponentIdentifier,
   getDataFromFile,
@@ -6,83 +8,84 @@ const {
   getSubDependencies,
   getLatestSha,
   respondWithError,
-  joinWithCurrentUrl
-} = require('../../util')
+  joinWithCurrentUrl,
+} = require('../../util');
 
 const {
-  substitutionMap
-} = require('../constants')
+  substitutionMap,
+} = require('../constants');
 
-const express = require('express')
-const path = require('path')
-const router = express.Router()
+const router = express.Router();
 
 const orgs = {
-  'govuk': {
+  govuk: {
     name: 'alphagov/govuk-design-system',
-    componentRootPath: `src/components`,
+    componentRootPath: 'src/components',
     nunjucksPaths: ['views/layouts'],
-    dependencies: ['govuk-frontend']
+    dependencies: ['govuk-frontend'],
   },
-  'hmrc': {
+  hmrc: {
     name: 'hmrc/design-system',
-    componentRootPath: `src/examples`,
+    componentRootPath: 'src/examples',
     nunjucksPaths: ['lib/template-hacks'],
-    dependencies: ['govuk-frontend', 'hmrc-frontend']
-  }
-}
+    dependencies: ['govuk-frontend', 'hmrc-frontend'],
+  },
+};
 
 const getLatestExamples = (name) => getLatestSha(name)
-  .then(sha => getDependency(
+  .then((sha) => getDependency(
     name,
     `https://github.com/${name}/tarball/${sha}`,
-    sha
-  ))
+    sha,
+  ));
 
-router.get('/', async (req, res) => {
-  res.send(Object.keys(orgs).map(orgName => joinWithCurrentUrl(req, orgName)))
-})
+router.get('/', (req, res) => {
+  res.send(Object.keys(orgs).map((orgName) => joinWithCurrentUrl(req, orgName)));
+});
 
-router.get('/:org', async (req, res) => {
-  const {componentRootPath, name} = orgs[req.params.org]
+router.get('/:org', (req, res) => {
+  const { componentRootPath, name } = orgs[req.params.org];
   getLatestExamples(name)
-    .then(path => getDirectories(`${path}/${componentRootPath}`))
-    .then(dirs => {
-      res.send(dirs.map(dir => joinWithCurrentUrl(req, dir)))
+    .then((examplePath) => getDirectories(`${examplePath}/${componentRootPath}`))
+    .then((dirs) => {
+      res.send(dirs.map((dir) => joinWithCurrentUrl(req, dir)));
     })
-    .catch(respondWithError(res))
-})
+    .catch(respondWithError(res));
+});
 
-router.get('/:org/:component', async (req, res) => {
-  const {params: {component, org}} = req
-  const {componentRootPath, dependencies, name, nunjucksPaths} = orgs[org]
+router.get('/:org/:component', (req, res) => {
+  const { params: { component, org } } = req;
+  const {
+    componentRootPath, dependencies, name, nunjucksPaths,
+  } = orgs[org];
 
-  const componentIdentifier = getComponentIdentifier(undefined, component)
+  const componentIdentifier = getComponentIdentifier(undefined, component);
 
   getLatestExamples(name)
-    .then(dependencyPath => getSubDependencies(dependencyPath, dependencies)
-      .then(subdependecyPaths => ({
+    .then((dependencyPath) => getSubDependencies(dependencyPath, dependencies)
+      .then((subdependecyPaths) => ({
         dependencyPath,
-        subdependecyPaths: [...subdependecyPaths, ...nunjucksPaths.map(x => path.join(dependencyPath, x))]
-      }))
-    )
-    .then(paths => {
-      const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`
+        subdependecyPaths: [
+          ...subdependecyPaths,
+          ...nunjucksPaths.map((x) => path.join(dependencyPath, x))],
+      })))
+    .then((paths) => {
+      const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`;
 
       return getDirectories(componentPath)
-        .map(example => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths).catch(err => {
-          const preparedMessage = 'This example couldn\'t be prepared - ' + err.message
+        .map((example) => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths).catch((err) => {
+          const preparedMessage = `This example couldn't be prepared - ${err.message}`;
           return {
             html: preparedMessage,
-            nunjucks: preparedMessage
-          }
+            nunjucks: preparedMessage,
+          };
         })
-          .then(htmlAndNunjucks => ({name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks})))
+          .then((htmlAndNunjucks) => ({ name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks })));
     })
-    .then(result => {
-      res.send(result)
+    .then((result) => {
+      res.send(result);
     })
-    .catch(respondWithError(res))
-})
+    .catch(respondWithError(res));
+});
 
-module.exports = router
+module.exports = router;
