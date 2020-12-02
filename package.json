@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest && eslint",
+    "test": "jest && npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "dev": "nodemon server.js --ignore 'src/dependencies/**/*'"

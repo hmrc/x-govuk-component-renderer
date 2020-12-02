@@ -1,18 +1,5 @@
 {
-  "env": {
-    "node": true
-  },
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base"],
   "root": true,
-  "ignorePatterns": ["src/dependencies/**/*.js"],
-  "rules": {
-    "semi": "error"
-  },
-  "parserOptions": {
-    "ecmaVersion": 2019,
-    "ecmaFeatures": {
-      "globalReturn": true,
-      "experimentalObjectRestSpread": true
-    }
-  }
+  "ignorePatterns": ["src/dependencies/**/*.js"]
 }
