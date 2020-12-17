@@ -1,5 +1,19 @@
 {
-  "extends": ["airbnb-base"],
+  "extends": [
+    "airbnb-base"
+  ],
   "root": true,
-  "ignorePatterns": ["src/dependencies/**/*.js"]
+  "ignorePatterns": [
+    "src/dependencies/**/*.js"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "test/**/*"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }
