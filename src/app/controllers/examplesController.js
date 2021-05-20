@@ -20,19 +20,21 @@ const router = express.Router();
 const orgs = {
   govuk: {
     name: 'alphagov/govuk-design-system',
+    branch: 'main',
     componentRootPath: 'src/components',
     nunjucksPaths: ['views/layouts'],
     dependencies: ['govuk-frontend'],
   },
   hmrc: {
     name: 'hmrc/design-system',
+    branch: 'master',
     componentRootPath: 'src/examples',
     nunjucksPaths: ['lib/template-hacks'],
     dependencies: ['govuk-frontend', 'hmrc-frontend'],
   },
 };
 
-const getLatestExamples = (name) => getLatestSha(name)
+const getLatestExamples = (name, branch) => getLatestSha(name, branch)
   .then((sha) => getDependency(
     name,
     `https://github.com/${name}/tarball/${sha}`,
@@ -44,8 +46,8 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:org', (req, res) => {
-  const { componentRootPath, name } = orgs[req.params.org];
-  getLatestExamples(name)
+  const { componentRootPath, name, branch } = orgs[req.params.org];
+  getLatestExamples(name, branch)
     .then((examplePath) => getDirectories(`${examplePath}/${componentRootPath}`))
     .then((dirs) => {
       res.send(dirs.map((dir) => joinWithCurrentUrl(req, dir)));
@@ -56,12 +58,12 @@ router.get('/:org', (req, res) => {
 router.get('/:org/:component', (req, res) => {
   const { params: { component, org } } = req;
   const {
-    componentRootPath, dependencies, name, nunjucksPaths,
+    componentRootPath, dependencies, name, branch, nunjucksPaths,
   } = orgs[org];
 
   const componentIdentifier = getComponentIdentifier(undefined, component);
 
-  getLatestExamples(name)
+  getLatestExamples(name, branch)
     .then((dependencyPath) => getSubDependencies(dependencyPath, dependencies)
       .then((subdependecyPaths) => ({
         dependencyPath,
