@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest && npm run lint",
+    "test": "jest --detectOpenHandles --forceExit && npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "dev": "nodemon server.js --ignore 'src/dependencies/**/*'"
@@ -33,10 +33,9 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.1.3",
     "husky": "^4.3.0",
-    "jest": "^25.1.0",
-    "moxios": "^0.4.0",
+    "jest": "^27.0.6",
     "nodemon": "^2.0.4",
-    "supertest": "^4.0.2"
+    "supertest": "^6.1.4"
   },
   "bin": {
     "taasa": "./cli.js"
