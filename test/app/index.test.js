@@ -352,14 +352,16 @@ describe('X-GOVUK Component Renderer', () => {
       .expect(500));
 
     it('should work with HMRC components', (done) => request(app)
-      .get('/example-usage/hmrc/green-button')
+      .get('/example-usage/hmrc/timeline')
       .expect(200)
       .then((response) => {
-        expect(response.body).toEqual([{
-          name: 'green-button/example',
-          html: '<h1 class="govuk-heading-xl">Check your National Insurance record</h1>\n\n<p class="govuk-body">You can check your National Insurance record online to see:</p>\n\n<ul class="govuk-list govuk-list--bullet">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href="#" class="govuk-link">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href="#" class="govuk-link">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class="govuk-body">\n  Your online record does not cover how much <a href="#" class="govuk-link">State Pension you’re likely to get</a>.\n</p>\n\n<button class="govuk-button govuk-button--start" data-module="govuk-button">\n  Start now\n  <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">\n    <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>\n  </svg></button>',
-          nunjucks: '{% from "govuk/components/button/macro.njk" import govukButton %}\n\n<h1 class="govuk-heading-xl">Check your National Insurance record</h1>\n\n<p class="govuk-body">You can check your National Insurance record online to see:</p>\n\n<ul class="govuk-list govuk-list--bullet">\n  <li>what you’ve paid, up to the start of the current tax year (6 April 2019)</li>\n  <li>any <a href="#" class="govuk-link">National Insurance credits</a> you’ve received</li>\n  <li>if gaps in contributions or credits mean some years do not count towards your State Pension (they are not ‘qualifying years’)</li>\n  <li>if you can pay <a href="#" class="govuk-link">voluntary contributions</a> to fill any gaps and how much this will cost</li>\n</ul>\n\n<p class="govuk-body">\n  Your online record does not cover how much <a href="#" class="govuk-link">State Pension you’re likely to get</a>.\n</p>\n\n{{ govukButton({\n  text: "Start now",\n  isStartButton: true\n}) }}',
-        }]);
+        expect(response.body).toEqual([
+          {
+            name: 'timeline/example',
+            html: '<ol class="hmrc-timeline">\n<li class="hmrc-timeline__event">\n        <h2 class="hmrc-timeline__event-title">Repayment complete</h2>\n        <time class="hmrc-timeline__event-meta" datetime="2020-07-15">15 July 2020</time>\n        <div class="hmrc-timeline__event-content">\n          <p class="govuk-body">We repaid you £50. It will take 3 days for the money to reach your account.</p>\n        </div>\n      </li><li class="hmrc-timeline__event">\n        <h2 class="hmrc-timeline__event-title">Checking your claim</h2>\n        <time class="hmrc-timeline__event-meta" datetime="2020-07-14">14 July 2020</time>\n        <div class="hmrc-timeline__event-content">\n          <p class="govuk-body">We received your return. You claimed you were due a repayment of £50. We are checking your claim.</p>\n        </div>\n      </li>  </ol>',
+            nunjucks: "{%- from \"hmrc/components/timeline/macro.njk\" import hmrcTimeline -%}\n\n{% set exampleContent1 %}<p class=\"govuk-body\">We received your return. You claimed you were due a repayment of £50. We are checking your claim.</p>{% endset %}\n{% set exampleContent2 %}<p class=\"govuk-body\">We repaid you £50. It will take 3 days for the money to reach your account.</p>{% endset %}\n\n  {{ hmrcTimeline({\n    headinglevel: \"2\",\n    events: [\n      {\n        title: 'Repayment complete',\n        datetime: '2020-07-15',\n        time: '15 July 2020',\n        content: exampleContent2\n      },\n      {\n        title: 'Checking your claim',\n        datetime: '2020-07-14',\n        time: '14 July 2020',\n        content: exampleContent1\n      }\n    ]\n  }) }}",
+          },
+        ]);
         done();
       }));
 
