@@ -27,7 +27,7 @@ const orgs = {
   },
   hmrc: {
     name: 'hmrc/design-system',
-    branch: 'master',
+    branch: 'main',
     componentRootPath: 'src/examples',
     nunjucksPaths: ['lib/template-hacks'],
     dependencies: ['govuk-frontend', 'hmrc-frontend'],
@@ -60,7 +60,6 @@ router.get('/:org/:component', (req, res) => {
   const {
     componentRootPath, dependencies, name, branch, nunjucksPaths,
   } = orgs[org];
-
   const componentIdentifier = getComponentIdentifier(undefined, component);
 
   getLatestExamples(name, branch)
