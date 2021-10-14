@@ -90,14 +90,16 @@ const getLatestSha = (() => {
       delete cache[key];
     }, fifteenMinutesInMillis);
   };
-  return async (repo, branch = 'master') => {
+  return async (repo, branch = 'main') => {
     const cacheKey = getCacheKey(repo, branch);
     if (cache[cacheKey]) {
       return cache[cacheKey];
     }
     const token = process.env.TOKEN;
     const headers = token ? { headers: { Authorization: `token ${token}` } } : undefined;
-    const { data: { sha } } = await axios.get(`https://api.github.com/repos/${repo}/commits/${branch}`, headers);
+    const url = `https://api.github.com/repos/${repo}/commits/${branch}`;
+    console.log(`Getting URL ${url}`);
+    const { data: { sha } } = await axios.get(url, headers);
     addToCache(cacheKey, sha);
     return sha;
   };
