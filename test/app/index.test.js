@@ -548,7 +548,7 @@ describe('X-GOVUK Component Renderer', () => {
     it('should return rendered markdown of README.md', () => {
       let expected;
       fs.readFile(readMe, 'utf8', (err, contents) => {
-        expected = marked(contents);
+        expected = marked.parse(contents);
       });
 
       return request(app)

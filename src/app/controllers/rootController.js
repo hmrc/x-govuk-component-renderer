@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
     if (err) {
       res.status(500).send('Could not display README, please check github instead.');
     } else {
-      res.send(marked(contents));
+      res.send(marked.parse(contents));
     }
   });
 });
