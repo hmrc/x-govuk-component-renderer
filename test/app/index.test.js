@@ -310,9 +310,9 @@ describe('X-GOVUK Component Renderer', () => {
   <label class="govuk-label" for="file-upload-1">
     Upload a file
   </label>
-  <span id="file-upload-1-error" class="govuk-error-message">
+  <p id="file-upload-1-error" class="govuk-error-message">
   <span class="govuk-visually-hidden">Error:</span> The CSV must be smaller than 2MB
-  </span>
+  </p>
   <input class="govuk-file-upload govuk-file-upload--error" id="file-upload-1" name="file-upload-1" type="file" aria-describedby="file-upload-1-error">
 </div>`,
         name: 'file-upload/error',
@@ -548,7 +548,7 @@ describe('X-GOVUK Component Renderer', () => {
     it('should return rendered markdown of README.md', () => {
       let expected;
       fs.readFile(readMe, 'utf8', (err, contents) => {
-        expected = marked(contents);
+        expected = marked.parse(contents);
       });
 
       return request(app)
