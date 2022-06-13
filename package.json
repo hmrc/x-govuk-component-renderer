@@ -11,12 +11,14 @@
     "test": "jest --detectOpenHandles --forceExit && npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "dev": "nodemon server.js --ignore 'src/dependencies/**/*'"
+    "dev": "nodemon server.js --ignore 'src/dependencies/**/*'",
+    "audit": "better-npm-audit audit"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.4",
+    "better-npm-audit": "^3.7.3",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
