@@ -1,3 +1,4 @@
 {
-  "1084765": "minimatch - devDependency, no risk given our usage"
+  "https://github.com/advisories/GHSA-f8q6-p94x-37v3": "minimatch - devDependency, no risk given our usage",
+  "https://github.com/advisories/GHSA-hrpp-h998-j3pp": "qs - devDependency, no risk given our usage"
 }
