@@ -1,6 +1,13 @@
 ARG NODE_VERSION
 ARG DOCKERHUB=dockerhub.tax.service.gov.uk
-FROM ${DOCKERHUB}/node:${NODE_VERSION:-10.15.1}-slim
+
+# NodeJS docker images are tagged with:
+# - the NodeJS version they provide
+# - "-bullseye", the name of the debian distro they are built from
+# - "-slim", to indicate they only include the minimal system packages
+#   needed to run nodejs so the image is smaller with less security surface
+# For more context https://hub.docker.com/_/node
+FROM ${DOCKERHUB}/node:${NODE_VERSION}-bullseye-slim
 
 WORKDIR /x-govuk-component-renderer
 

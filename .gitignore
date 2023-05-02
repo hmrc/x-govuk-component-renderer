@@ -7,3 +7,4 @@ dependencies
 Pipfile
 /target/
 /project/
+.version
