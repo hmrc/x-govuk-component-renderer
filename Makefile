@@ -24,7 +24,7 @@ push_image: ## Push the docker image to artifactory
 prep_version_incrementor:
 	@echo "Renaming requirements to prevent pipenv trying to convert it"
 	@echo "Installing version-incrementor with pipenv"
-	@pip install pipenv --upgrade
+	@pip install pipenv -i https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple --upgrade
 	@pipenv --python $(PYTHON_VERSION)
 	@pipenv run pip install -i https://artefacts.tax.service.gov.uk/artifactory/api/pypi/pips/simple 'version-incrementor<2'
 
