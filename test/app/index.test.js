@@ -292,14 +292,14 @@ describe('X-GOVUK Component Renderer', () => {
   <label class="govuk-label" for="file-upload-1">
     Upload a file
   </label>
-  <input class="govuk-file-upload" id="file-upload-1" name="file-upload-1" type="file">
+  <input class="govuk-file-upload" id="file-upload-1" name="fileUpload1" type="file">
 </div>`,
         name: 'file-upload/default',
         nunjucks: `{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
 
 {{ govukFileUpload({
   id: "file-upload-1",
-  name: "file-upload-1",
+  name: "fileUpload1",
   label: {
     text: "Upload a file"
   }
@@ -313,14 +313,14 @@ describe('X-GOVUK Component Renderer', () => {
   <p id="file-upload-1-error" class="govuk-error-message">
   <span class="govuk-visually-hidden">Error:</span> The CSV must be smaller than 2MB
   </p>
-  <input class="govuk-file-upload govuk-file-upload--error" id="file-upload-1" name="file-upload-1" type="file" aria-describedby="file-upload-1-error">
+  <input class="govuk-file-upload govuk-file-upload--error" id="file-upload-1" name="fileUpload1" type="file" aria-describedby="file-upload-1-error">
 </div>`,
         name: 'file-upload/error',
         nunjucks: `{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
 
 {{ govukFileUpload({
   id: "file-upload-1",
-  name: "file-upload-1",
+  name: "fileUpload1",
   label: {
     text: "Upload a file"
   },

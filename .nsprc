@@ -1,4 +1,5 @@
 {
+  "GHSA-67hx-6x53-jw92": "@babel/traverse - devDependency, no risk given our usage",
   "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage",
   "GHSA-f8q6-p94x-37v3": "minimatch - devDependency, no risk given our usage",
   "GHSA-hrpp-h998-j3pp": "qs - devDependency, no risk given our usage",
