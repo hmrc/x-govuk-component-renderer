@@ -106,11 +106,18 @@ const getLatestSha = (() => {
 })();
 
 const getOrgDetails = (org, version) => ({
+  'govuk-frontend': {
+    code: 'govuk',
+    label: 'govuk-frontend',
+    githubUrl: `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
+    componentDir: 'packages/govuk-frontend/src/govuk/components',
+    minimumSupported: 3,
+  },
   govuk: {
     code: 'govuk',
     label: 'govuk-frontend',
     githubUrl: `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
-    componentDir: 'src/govuk/components',
+    componentDir: 'packages/govuk-frontend/src/govuk/components',
     minimumSupported: 3,
   },
   hmrc: {
@@ -160,7 +167,10 @@ const getConfiguredNunjucksForOrganisation = (org, version) => getNpmDependency(
 
 const renderComponent = (org, component, params, nunjucksRenderer) => {
   const preparedParams = JSON.stringify(params || {}, null, 2);
-  const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
+  console.log(`${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`);
+  // eslint-disable-next-line max-len
+  // const nunjucksString = `{% from 'packages/govuk-frontend/src/govuk/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
+  const nunjucksString = `{% from 'dist/govuk/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
 
   return nunjucksRenderer.renderString(nunjucksString);
 };
