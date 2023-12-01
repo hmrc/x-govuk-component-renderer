@@ -106,27 +106,38 @@ const getLatestSha = (() => {
 })();
 
 const getOrgDetails = (org, version) => ({
-  'govuk-frontend': {
-    code: 'govuk',
-    label: 'govuk-frontend',
-    githubUrl: `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
-    componentDir: 'packages/govuk-frontend/src/govuk/components',
-    minimumSupported: 3,
-  },
   govuk: {
     code: 'govuk',
     label: 'govuk-frontend',
     githubUrl: `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
-    componentDir: 'packages/govuk-frontend/src/govuk/components',
     minimumSupported: 3,
+    versionSpecifics: (v) => [
+      {
+        fromVersion: 5,
+        srcDir: 'packages/govuk-frontend/src/govuk/components',
+        distDir: 'dist/',
+        exampleData: (example) => (example.options),
+      },
+      {
+        fromVersion: 3,
+        srcDir: 'src/govuk/components',
+        distDir: '',
+        exampleData: (example) => (example.data),
+      },
+    ].find((versionDirs) => versionDirs.fromVersion <= parseInt(v, 10)),
   },
   hmrc: {
     code: 'hmrc',
     label: 'hmrc-frontend',
     githubUrl: `https://github.com/hmrc/hmrc-frontend/tarball/v${version}`,
-    componentDir: 'src/components',
-    dependencies: ['govuk-frontend'],
     minimumSupported: 1,
+    versionSpecifics: () => ({
+      fromVersion: 1,
+      srcDir: 'src/components',
+      distDir: '',
+      exampleData: (example) => (example.data),
+    }),
+    dependencies: ['govuk-frontend'],
   },
 })[org];
 
@@ -159,18 +170,17 @@ const respondWithError = (res) => (err) => {
 
 const joinWithCurrentUrl = (req, path) => `${req.originalUrl.replace(/\/+$/, '')}/${path}`;
 
-const versionIsCompatible = (version, org) => parseFloat(version) >= org.minimumSupported;
+const versionIsCompatible = (version, org) => parseFloat(version.split('-')[0]) >= org.minimumSupported;
 
 const getConfiguredNunjucksForOrganisation = (org, version) => getNpmDependency(org.label, version)
   .then((path) => getSubDependencies(path, org.dependencies || []).then((dependencyPaths) => [path, `${path}/views/layouts`, ...dependencyPaths]))
   .then((nunjucksPaths) => nunjucks(nunjucksPaths));
 
-const renderComponent = (org, component, params, nunjucksRenderer) => {
+const renderComponent = (orgDetails, majorVersion, component, params, nunjucksRenderer) => {
   const preparedParams = JSON.stringify(params || {}, null, 2);
-  console.log(`${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`);
-  // eslint-disable-next-line max-len
-  // const nunjucksString = `{% from 'packages/govuk-frontend/src/govuk/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
-  const nunjucksString = `{% from 'dist/govuk/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
+  const { distDir } = orgDetails.versionSpecifics(majorVersion);
+  const org = orgDetails.code;
+  const nunjucksString = `{% from '${distDir}${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
 
   return nunjucksRenderer.renderString(nunjucksString);
 };
