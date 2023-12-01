@@ -2,6 +2,8 @@ const express = require('express');
 
 const bodyParser = require('body-parser');
 
+const { versionIsCompatible } = require('../../model');
+
 const jsonParser = bodyParser.json();
 
 const {
@@ -9,7 +11,6 @@ const {
   getOrgDetails,
   respondWithError,
   getConfiguredNunjucksForOrganisation,
-  versionIsCompatible,
 } = require('../../util');
 
 const router = express.Router();

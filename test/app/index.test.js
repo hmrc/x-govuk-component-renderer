@@ -530,7 +530,7 @@ describe('X-GOVUK Component Renderer', () => {
         .expect(200)
         .then((response) => {
           const { output } = response.body.filter((x) => x.exampleId === 'button-start-link')[0];
-          expect(output.includes('role="presentation"')).toBe(false);
+          expect(output.includes('role="button"')).toBeTruthy();
           expect(output.includes('aria-hidden="true"')).toBe(true);
         }),
       request(app)
@@ -540,6 +540,14 @@ describe('X-GOVUK Component Renderer', () => {
           const { output } = response.body.filter((x) => x.exampleId === 'button-start-link')[0];
           expect(output.includes('role="presentation"')).toBe(true);
           expect(output.includes('aria-hidden="true"')).toBe(false);
+        }),
+      request(app)
+        .get('/snapshot/govuk/5.0.0-beta.1') // TODO this should be updated to the 5.0.0 release version when available
+        .expect(200)
+        .then((response) => {
+          const { output } = response.body.filter((x) => x.exampleId === 'button-start-link')[0];
+          expect(output.includes('role="button"')).toBeTruthy();
+          expect(output.includes('aria-hidden="true"')).toBeTruthy();
         }),
     ]));
   });

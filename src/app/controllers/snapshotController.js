@@ -2,10 +2,13 @@ const express = require('express');
 const Promise = require('bluebird');
 const YAML = require('js-yaml');
 
+const fs = Promise.promisifyAll(require('fs'));
+
 const bodyParser = require('body-parser');
 
+const { versionIsCompatible } = require('../../model');
+
 const jsonParser = bodyParser.json();
-const fs = Promise.promisifyAll(require('fs'));
 
 const {
   getConfiguredNunjucksForOrganisation,
@@ -15,7 +18,6 @@ const {
   getDependency,
   getComponentSignature,
   renderComponent,
-  versionIsCompatible,
 } = require('../../util');
 
 const flatten = (arr) => arr.reduce((previous, current) => previous.concat(...current), []);
@@ -46,7 +48,7 @@ router.get('/:org/:version', jsonParser, (req, res) => {
   const ensureUniqueName = uniqueNameChecker();
 
   if (versionIsCompatible(version, orgDetails)) {
-    const { srcDir, exampleData } = orgDetails.versionSpecifics(version);
+    const { srcDir, exampleData } = orgDetails.getVersionSpecifics(version);
     Promise.all([
       getConfiguredNunjucksForOrganisation(orgDetails, version),
       getDependency(`${orgDetails.label}-github`, orgDetails.githubUrl, version)
