@@ -17,11 +17,10 @@ const router = express.Router();
 router.post('/:org/:version/:component', jsonParser, (req, res) => {
   const { version, org, component } = req.params;
   const orgDetails = getOrgDetails(org);
-  const majorVersion = version.split('.')[0];
 
   if (versionIsCompatible(version, orgDetails)) {
     getConfiguredNunjucksForOrganisation(orgDetails, version)
-      .then((nunjucks) => renderComponent(orgDetails, majorVersion, component, req.body, nunjucks))
+      .then((nunjucks) => renderComponent(orgDetails, version, component, req.body, nunjucks))
       .then((rendered) => res.send(rendered))
       .catch(respondWithError(res));
   } else {

@@ -98,12 +98,13 @@ const getLatestSha = (() => {
     const token = process.env.TOKEN;
     const headers = token ? { headers: { Authorization: `token ${token}` } } : undefined;
     const url = `https://api.github.com/repos/${repo}/commits/${branch}`;
-    console.log(`Getting URL ${url}`);
     const { data: { sha } } = await axios.get(url, headers);
     addToCache(cacheKey, sha);
     return sha;
   };
 })();
+
+const majorVersion = (v) => parseInt(v.split('.')[0], 10);
 
 const getOrgDetails = (org, version) => ({
   govuk: {
@@ -124,7 +125,7 @@ const getOrgDetails = (org, version) => ({
         distDir: '',
         exampleData: (example) => (example.data),
       },
-    ].find((versionDirs) => versionDirs.fromVersion <= parseInt(v, 10)),
+    ].find((versionDirs) => versionDirs.fromVersion <= majorVersion(v)),
   },
   hmrc: {
     code: 'hmrc',
@@ -176,9 +177,9 @@ const getConfiguredNunjucksForOrganisation = (org, version) => getNpmDependency(
   .then((path) => getSubDependencies(path, org.dependencies || []).then((dependencyPaths) => [path, `${path}/views/layouts`, ...dependencyPaths]))
   .then((nunjucksPaths) => nunjucks(nunjucksPaths));
 
-const renderComponent = (orgDetails, majorVersion, component, params, nunjucksRenderer) => {
+const renderComponent = (orgDetails, version, component, params, nunjucksRenderer) => {
   const preparedParams = JSON.stringify(params || {}, null, 2);
-  const { distDir } = orgDetails.versionSpecifics(majorVersion);
+  const { distDir } = orgDetails.versionSpecifics(version);
   const org = orgDetails.code;
   const nunjucksString = `{% from '${distDir}${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
 

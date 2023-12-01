@@ -44,10 +44,9 @@ router.get('/:org/:version', jsonParser, (req, res) => {
   const { version, org } = req.params;
   const orgDetails = getOrgDetails(org, version);
   const ensureUniqueName = uniqueNameChecker();
-  const majorVersion = version.split('.')[0];
 
   if (versionIsCompatible(version, orgDetails)) {
-    const { srcDir, exampleData } = orgDetails.versionSpecifics(majorVersion);
+    const { srcDir, exampleData } = orgDetails.versionSpecifics(version);
     Promise.all([
       getConfiguredNunjucksForOrganisation(orgDetails, version),
       getDependency(`${orgDetails.label}-github`, orgDetails.githubUrl, version)
@@ -66,7 +65,7 @@ router.get('/:org/:version', jsonParser, (req, res) => {
     ])
       .spread((configuredNunjucks, examples) => examples.map((example) => ({
         ...example,
-        output: renderComponent(orgDetails, majorVersion,
+        output: renderComponent(orgDetails, version,
           example.componentName, example.input, configuredNunjucks),
       })))
       .then((out) => res.send(out))
