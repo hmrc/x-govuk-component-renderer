@@ -2,10 +2,13 @@ const express = require('express');
 const Promise = require('bluebird');
 const YAML = require('js-yaml');
 
+const fs = Promise.promisifyAll(require('fs'));
+
 const bodyParser = require('body-parser');
 
+const { versionIsCompatible } = require('../../model');
+
 const jsonParser = bodyParser.json();
-const fs = Promise.promisifyAll(require('fs'));
 
 const {
   getConfiguredNunjucksForOrganisation,
@@ -13,7 +16,6 @@ const {
   getOrgDetails,
   respondWithError,
   getDependency,
-  versionIsCompatible,
   getComponentSignature,
   renderComponent,
 } = require('../../util');
@@ -45,14 +47,13 @@ router.get('/:org/:version', jsonParser, (req, res) => {
   const orgDetails = getOrgDetails(org, version);
   const ensureUniqueName = uniqueNameChecker();
 
-  if (!versionIsCompatible(version, orgDetails)) {
-    res.status(500).send(`This version of ${(orgDetails.label)} is not supported`);
-  } else {
+  if (versionIsCompatible(version, orgDetails)) {
+    const { srcDir, exampleData } = orgDetails.getVersionSpecifics(version);
     Promise.all([
       getConfiguredNunjucksForOrganisation(orgDetails, version),
       getDependency(`${orgDetails.label}-github`, orgDetails.githubUrl, version)
-        .then((path) => getDirectories(`${path}/${orgDetails.componentDir}`)
-          .map((componentName) => fs.readFileAsync(`${path}/${orgDetails.componentDir}/${componentName}/${componentName}.yaml`, 'utf8')
+        .then((path) => getDirectories(`${path}/${srcDir}`)
+          .map((componentName) => fs.readFileAsync(`${path}/${srcDir}/${componentName}/${componentName}.yaml`, 'utf8')
             .then((contents) => YAML.safeLoad(contents, { json: true }))
             .then((componentInfo) => (componentInfo.type === 'layout' ? [] : componentInfo.examples))
             .catch(() => [])
@@ -60,16 +61,19 @@ router.get('/:org/:version', jsonParser, (req, res) => {
               componentName: getComponentSignature(orgDetails.code, componentName),
               exampleName: example.name,
               exampleId: ensureUniqueName(`${componentName}-${example.name}`.replace(/\s/g, '-')),
-              input: example.data,
+              input: exampleData(example),
             })))
           .then(flatten)),
     ])
       .spread((configuredNunjucks, examples) => examples.map((example) => ({
         ...example,
-        output: renderComponent(org, example.componentName, example.input, configuredNunjucks),
+        output: renderComponent(orgDetails, version,
+          example.componentName, example.input, configuredNunjucks),
       })))
       .then((out) => res.send(out))
       .catch(respondWithError(res));
+  } else {
+    res.status(500).send(`This version of ${(orgDetails.label)} is not supported`);
   }
 });
 

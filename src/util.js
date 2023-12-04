@@ -8,6 +8,7 @@ const fs = Promise.promisifyAll(require('fs'));
 const nunjucks = require('./lib/nunjucks');
 
 const { pathFromRoot } = require('./app/constants');
+const { OrgDetails, VersionSpecifics } = require('./model');
 
 const mkdir = (path) => fs.mkdirAsync(path, { recursive: true });
 
@@ -98,7 +99,6 @@ const getLatestSha = (() => {
     const token = process.env.TOKEN;
     const headers = token ? { headers: { Authorization: `token ${token}` } } : undefined;
     const url = `https://api.github.com/repos/${repo}/commits/${branch}`;
-    console.log(`Getting URL ${url}`);
     const { data: { sha } } = await axios.get(url, headers);
     addToCache(cacheKey, sha);
     return sha;
@@ -106,21 +106,41 @@ const getLatestSha = (() => {
 })();
 
 const getOrgDetails = (org, version) => ({
-  govuk: {
-    code: 'govuk',
-    label: 'govuk-frontend',
-    githubUrl: `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
-    componentDir: 'src/govuk/components',
-    minimumSupported: 3,
-  },
-  hmrc: {
-    code: 'hmrc',
-    label: 'hmrc-frontend',
-    githubUrl: `https://github.com/hmrc/hmrc-frontend/tarball/v${version}`,
-    componentDir: 'src/components',
-    dependencies: ['govuk-frontend'],
-    minimumSupported: 1,
-  },
+  govuk: new OrgDetails(
+    'govuk',
+    'govuk-frontend',
+    `https://github.com/alphagov/govuk-frontend/tarball/v${version}`,
+    3,
+    [
+      new VersionSpecifics(
+        5,
+        'packages/govuk-frontend/src/govuk/components',
+        'dist/',
+        (example) => (example.options),
+      ),
+      new VersionSpecifics(
+        3,
+        'src/govuk/components',
+        '',
+        (example) => (example.data),
+      ),
+    ],
+  ),
+  hmrc: new OrgDetails(
+    'hmrc',
+    'hmrc-frontend',
+    `https://github.com/hmrc/hmrc-frontend/tarball/v${version}`,
+    1,
+    [
+      new VersionSpecifics(
+        1,
+        'src/components',
+        '',
+        (example) => (example.data),
+      ),
+    ],
+    ['govuk-frontend'],
+  ),
 })[org];
 
 const loadJsonFile = (filePath) => fs.readFileAsync(filePath).then(JSON.parse);
@@ -152,15 +172,15 @@ const respondWithError = (res) => (err) => {
 
 const joinWithCurrentUrl = (req, path) => `${req.originalUrl.replace(/\/+$/, '')}/${path}`;
 
-const versionIsCompatible = (version, org) => parseFloat(version) >= org.minimumSupported;
-
 const getConfiguredNunjucksForOrganisation = (org, version) => getNpmDependency(org.label, version)
   .then((path) => getSubDependencies(path, org.dependencies || []).then((dependencyPaths) => [path, `${path}/views/layouts`, ...dependencyPaths]))
   .then((nunjucksPaths) => nunjucks(nunjucksPaths));
 
-const renderComponent = (org, component, params, nunjucksRenderer) => {
+const renderComponent = (orgDetails, version, component, params, nunjucksRenderer) => {
   const preparedParams = JSON.stringify(params || {}, null, 2);
-  const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
+  const { distDir } = orgDetails.getVersionSpecifics(version);
+  const org = orgDetails.code;
+  const nunjucksString = `{% from '${distDir}${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
 
   return nunjucksRenderer.renderString(nunjucksString);
 };
@@ -177,7 +197,6 @@ module.exports = {
   getSubDependencies,
   respondWithError,
   getConfiguredNunjucksForOrganisation,
-  versionIsCompatible,
   renderComponent,
   joinWithCurrentUrl,
 };
