@@ -1,4 +1,5 @@
 {
+  "GHSA-jchw-25xp-jwwc": "follow-redirects - devDependency, no risk given our usage",
   "GHSA-wf5p-g6vw-rhxx": "axios - devDependency, no risk given our usage",
   "GHSA-67hx-6x53-jw92": "@babel/traverse - devDependency, no risk given our usage",
   "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage",
