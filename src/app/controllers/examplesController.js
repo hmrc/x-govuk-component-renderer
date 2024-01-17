@@ -64,17 +64,17 @@ router.get('/:org/:component', (req, res) => {
 
   getLatestExamples(name, branch)
     .then((dependencyPath) => getSubDependencies(dependencyPath, dependencies)
-      .then((subdependecyPaths) => ({
+      .then((subDependencyPaths) => ({
         dependencyPath,
-        subdependecyPaths: [
-          ...subdependecyPaths,
+        subDependencyPaths: [
+          ...subDependencyPaths,
           ...nunjucksPaths.map((x) => path.join(dependencyPath, x))],
       })))
     .then((paths) => {
       const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`;
 
       return getDirectories(componentPath)
-        .map((example) => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subdependecyPaths).catch((err) => {
+        .map((example) => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subDependencyPaths).catch((err) => {
           const preparedMessage = `This example couldn't be prepared - ${err.message}`;
           return {
             html: preparedMessage,

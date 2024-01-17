@@ -88,7 +88,5 @@ The response structure is as follows:
   ]
 ```
 
-This is currently hosted at https://template-service-spike.herokuapp.com
-
 Limitations for the current phase:
  - We don't currently support `caller` blocks being fed in

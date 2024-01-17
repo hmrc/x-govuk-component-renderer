@@ -66,15 +66,6 @@ const getDirectories = (source) => fs.readdirAsync(source, { withFileTypes: true
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name));
 
-const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then((contents) => {
-  const nj = matter(contents).content;
-  const html = nunjucks(paths).renderString(nj).trim();
-  return {
-    html,
-    nunjucks: nj.trim(),
-  };
-});
-
 const getNpmDependency = (dependency, version) => getDependency(
   dependency,
   `https://registry.npmjs.org/${dependency}/-/${dependency}-${version}.tgz`,
@@ -142,6 +133,34 @@ const getOrgDetails = (org, version) => ({
     ['govuk-frontend'],
   ),
 })[org];
+
+const extractOrgAndVersion = (dependencyPath) => {
+  const parts = dependencyPath.split('/');
+  const orgFrontend = parts.findIndex((part) => part.endsWith('-frontend'));
+  const org = parts[orgFrontend].split('-')[0];
+  const version = parts[orgFrontend + 1];
+  return { org, version };
+};
+
+const getDistributionPath = (path) => {
+  if (path.includes('-frontend')) {
+    const { org, version } = extractOrgAndVersion(path);
+    const orgDetails = getOrgDetails(org, version);
+    const versionSpecifics = orgDetails.getVersionSpecifics(version);
+    return versionSpecifics ? `${path}/${versionSpecifics.distDir}` : path;
+  }
+  return path;
+};
+
+const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then((contents) => {
+  const nj = matter(contents).content;
+  const distPaths = paths.map(getDistributionPath);
+  const html = nunjucks(distPaths).renderString(nj).trim();
+  return {
+    html,
+    nunjucks: nj.trim(),
+  };
+});
 
 const loadJsonFile = (filePath) => fs.readFileAsync(filePath).then(JSON.parse);
 
