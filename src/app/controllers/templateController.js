@@ -20,19 +20,22 @@ router.post('/:org/:version/:template', jsonParser, async (req, res) => {
       org,
     },
   } = req;
-  const { label, minimumSupported } = getOrgDetails(org);
+  const orgDetails = getOrgDetails(org);
 
   if (org !== 'govuk' || template !== 'default') {
     res.status(400).send('Currently only "govuk" and the "default" template is supported');
     return;
   }
 
-  if (parseFloat(version) < minimumSupported) {
-    res.status(500).send(`This version of ${label} is not supported`);
+  if (parseFloat(version) < orgDetails.minimumSupported) {
+    res.status(500).send(`This version of ${orgDetails.label} is not supported`);
     return;
   }
-  getNpmDependency(label, version).then((path) => {
-    const nunjucksPaths = [`${path}/govuk`];
+
+  getNpmDependency(orgDetails.label, version).then((path) => {
+    const versionSpecifics = orgDetails.getVersionSpecifics(version);
+    const distPath = versionSpecifics ? `${path}/${versionSpecifics.distDir}` : path;
+    const nunjucksPaths = [`${distPath}/govuk`];
     const variables = Object.keys(body.variables || {}).map((key) => `{% set ${key}=${JSON.stringify(body.variables[key])} %}`);
     const blocks = Object.keys(body.blocks || {}).map((key) => `{% block ${key} %}${body.blocks[key]}{% endblock %}`);
     const nunjucksString = `${[...variables, ...blocks].join('\n')} {% extends "template.njk" %}`;
