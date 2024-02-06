@@ -489,6 +489,58 @@ describe('X-GOVUK Component Renderer', () => {
 </html>
 `.replace(/\s+/g, '\n'));
       }));
+
+    it('should render v5 govuk template', () => request(app)
+      .post('/template/govuk/5.0.0/default')
+      .send({
+        variables: {
+          htmlLang: 'abc',
+          htmlClasses: 'def',
+          assetUrl: '/ghi/jkl',
+          bodyAttributes: {
+            one: 1,
+            'data-two': 'this-is two',
+          },
+        },
+        blocks: {
+          beforeContent: 'abcdefghijklmnop',
+          pageTitle: 'This is the title',
+          headIcons: 'headIcons',
+          skipLink: 'skipLink',
+          header: 'the header',
+          main: 'the main',
+          footer: 'The footer',
+        },
+      })
+      .expect(200)
+      .then((response) => {
+        expectHtmlToMatch(response.text, `<!DOCTYPE html>
+<html lang="abc" class="govuk-template def">
+
+<head>
+\t<meta charset="utf-8">
+\t<title>This is the title</title>
+\t<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+\t<meta name="theme-color" content="#0b0c0c">
+
+\theadIcons
+
+
+\t<meta property="og:image" content="/ghi/jkl/images/govuk-opengraph-image.png">
+</head>
+
+<body class="govuk-template__body" one="1" data-two="this-is two">
+\t<script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
+
+\tskipLink
+\tthe header
+\tthe main
+\tThe footer
+</body>
+
+</html>
+`.replace(/\s+/g, '\n'));
+      }));
   });
 
   describe('snapshotter', () => {
