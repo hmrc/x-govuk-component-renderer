@@ -311,7 +311,7 @@ describe('X-GOVUK Component Renderer', () => {
     Upload a file
   </label>
   <p id="file-upload-1-error" class="govuk-error-message">
-  <span class="govuk-visually-hidden">Error:</span> The CSV must be smaller than 2MB
+    <span class="govuk-visually-hidden">Error:</span> The CSV must be smaller than 2MB
   </p>
   <input class="govuk-file-upload govuk-file-upload--error" id="file-upload-1" name="fileUpload1" type="file" aria-describedby="file-upload-1-error">
 </div>`,

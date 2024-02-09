@@ -142,20 +142,22 @@ const extractOrgAndVersion = (dependencyPath) => {
   return { org, version };
 };
 
-const getDistributionPath = (path) => {
-  if (path.endsWith('-frontend')) {
-    const { org, version } = extractOrgAndVersion(path);
-    const orgDetails = getOrgDetails(org, version);
-    const versionSpecifics = orgDetails.getVersionSpecifics(version);
-    return versionSpecifics ? `${path}/${versionSpecifics.distDir}` : path;
-  }
-  return path;
+const addDistributionPaths = (paths) => {
+  const distributionPaths = paths
+    .filter((path) => path.endsWith('-frontend'))
+    .map((path) => {
+      const { org, version } = extractOrgAndVersion(path);
+      const orgDetails = getOrgDetails(org, version);
+      const versionSpecifics = orgDetails.getVersionSpecifics(version);
+      return versionSpecifics ? `${path}/${versionSpecifics.distDir}` : path;
+    });
+  return [...paths, ...distributionPaths];
 };
 
 const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then((contents) => {
   const nj = matter(contents).content;
-  const distPaths = paths.map(getDistributionPath);
-  const html = nunjucks(distPaths).renderString(nj).trim();
+  const allPaths = addDistributionPaths(paths);
+  const html = nunjucks(allPaths).renderString(nj).trim();
   return {
     html,
     nunjucks: nj.trim(),
@@ -194,14 +196,12 @@ const joinWithCurrentUrl = (req, path) => `${req.originalUrl.replace(/\/+$/, '')
 const getConfiguredNunjucksForOrganisation = (org, version) => getNpmDependency(org.label, version)
   .then((path) => getSubDependencies(path, org.dependencies || []).then((dependencyPaths) => [path, `${path}/views/layouts`, ...dependencyPaths]))
   .then((nunjucksPaths) => {
-    const distributionPaths = nunjucksPaths.map(getDistributionPath);
-    console.log(distributionPaths);
-    return nunjucks(distributionPaths);
+    const allPaths = addDistributionPaths(nunjucksPaths);
+    return nunjucks(allPaths);
   });
 
 const renderComponent = (orgDetails, version, component, params, nunjucksRenderer) => {
   const preparedParams = JSON.stringify(params || {}, null, 2);
-  // const { distDir } = orgDetails.getVersionSpecifics(version);
   const org = orgDetails.code;
   const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
 
