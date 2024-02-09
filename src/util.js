@@ -143,7 +143,7 @@ const extractOrgAndVersion = (dependencyPath) => {
 };
 
 const getDistributionPath = (path) => {
-  if (path.includes('-frontend')) {
+  if (path.endsWith('-frontend')) {
     const { org, version } = extractOrgAndVersion(path);
     const orgDetails = getOrgDetails(org, version);
     const versionSpecifics = orgDetails.getVersionSpecifics(version);
@@ -193,13 +193,17 @@ const joinWithCurrentUrl = (req, path) => `${req.originalUrl.replace(/\/+$/, '')
 
 const getConfiguredNunjucksForOrganisation = (org, version) => getNpmDependency(org.label, version)
   .then((path) => getSubDependencies(path, org.dependencies || []).then((dependencyPaths) => [path, `${path}/views/layouts`, ...dependencyPaths]))
-  .then((nunjucksPaths) => nunjucks(nunjucksPaths));
+  .then((nunjucksPaths) => {
+    const distributionPaths = nunjucksPaths.map(getDistributionPath);
+    console.log(distributionPaths);
+    return nunjucks(distributionPaths);
+  });
 
 const renderComponent = (orgDetails, version, component, params, nunjucksRenderer) => {
   const preparedParams = JSON.stringify(params || {}, null, 2);
-  const { distDir } = orgDetails.getVersionSpecifics(version);
+  // const { distDir } = orgDetails.getVersionSpecifics(version);
   const org = orgDetails.code;
-  const nunjucksString = `{% from '${distDir}${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
+  const nunjucksString = `{% from '${org}/components/${getComponentIdentifier(org, component)}/macro.njk' import ${component} %}{{${component}(${preparedParams})}}`;
 
   return nunjucksRenderer.renderString(nunjucksString);
 };
