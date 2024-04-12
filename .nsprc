@@ -1,4 +1,6 @@
 {
+  "GHSA-f5x3-32g6-xq36": "tar - used to extract trusted govuk/hmrc-frontend tarballs, no risk given our usage",
+  "GHSA-rv95-896h-c2vc": "express - used to serve examples for dev tooling, no risk given our usage",
   "GHSA-jchw-25xp-jwwc": "follow-redirects - devDependency, no risk given our usage",
   "GHSA-cxjh-pqwp-8mfp": "follow-redirects - devDependency, no risk given our usage",
   "GHSA-wf5p-g6vw-rhxx": "axios - devDependency, no risk given our usage",
