@@ -158,6 +158,7 @@ const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then((co
   const nj = matter(contents).content;
   const allPaths = addDistributionPaths(paths);
   const html = nunjucks(allPaths).renderString(nj).trim();
+
   return {
     html,
     nunjucks: nj.trim(),
