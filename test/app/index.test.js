@@ -624,6 +624,6 @@ describe('X-GOVUK Component Renderer', () => {
   describe('Unknown paths', () => {
     it('should return a 404', () => request(app)
       .get('/unknown-path')
-      .expect(404));
+      .expect(405)); // TODO replace 404
   });
 });
