@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --detectOpenHandles --forceExit && npm run lint",
+    "test": "jest --forceExit && npm run lint",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "dev": "nodemon server.js --ignore 'src/dependencies/**/*'",
