@@ -1,18 +1,4 @@
 {
-  "GHSA-f5x3-32g6-xq36": "tar - used to extract trusted govuk/hmrc-frontend tarballs, no risk given our usage",
-  "GHSA-rv95-896h-c2vc": "express - used to serve examples for dev tooling, no risk given our usage",
-  "GHSA-jchw-25xp-jwwc": "follow-redirects - devDependency, no risk given our usage",
-  "GHSA-cxjh-pqwp-8mfp": "follow-redirects - devDependency, no risk given our usage",
   "GHSA-wf5p-g6vw-rhxx": "axios - devDependency, no risk given our usage",
-  "GHSA-67hx-6x53-jw92": "@babel/traverse - devDependency, no risk given our usage",
-  "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage",
-  "GHSA-f8q6-p94x-37v3": "minimatch - devDependency, no risk given our usage",
-  "GHSA-hrpp-h998-j3pp": "qs - devDependency, no risk given our usage",
-  "GHSA-9c47-m6qq-7p4h": "json5: devDependency, no risk given our usage",
-  "GHSA-h452-7996-h45h": "cookiejar: devDependency, no risk given our usage",
-  "GHSA-j8xg-fqg3-53r7": "word-wrap: devDependency, no risk given our usage",
-  "GHSA-72xf-g2v4-qvf3": "tough-cookie: devDependency, no risk given our usage",
-  "GHSA-3h5v-q93c-6h6q": "ws: devDependency, no risk given our usage",
-  "GHSA-952p-6rrq-rcjv": "micromatch: used by stylelint, no risk given our usage",
-  "GHSA-grv7-fg5c-xmjg": "braces: devDependency, no risk given our usage"
+  "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage"
 }
