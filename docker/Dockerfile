@@ -9,6 +9,8 @@ ARG DOCKERHUB=dockerhub.tax.service.gov.uk
 # For more context https://hub.docker.com/_/node
 FROM ${DOCKERHUB}/node:${NODE_VERSION}-bullseye-slim
 
+ENV NPM_CONFIG_REGISTRY='https://artefacts.tax.service.gov.uk/artifactory/api/npm/npmjs'
+
 WORKDIR /x-govuk-component-renderer
 
 COPY ./docker/build.sh .
