@@ -66,9 +66,11 @@ const getDirectories = (source) => fs.readdirAsync(source, { withFileTypes: true
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name));
 
+const registry = process.env.NPM_CONFIG_REGISTRY || 'https://registry.npmjs.org/';
+
 const getNpmDependency = (dependency, version) => getDependency(
   dependency,
-  `https://registry.npmjs.org/${dependency}/-/${dependency}-${version}.tgz`,
+  `${registry}/${dependency}/-/${dependency}-${version}.tgz`,
   version,
 );
 
