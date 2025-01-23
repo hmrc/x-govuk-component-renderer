@@ -5,6 +5,14 @@
 * [WGET](http://gnuwin32.sourceforge.net/packages/wget.htm) >= 1.19.1
 * [Node](https://nodejs.org/en/) 10.15.1
 
+
+## NPM registry
+NPM registry can be set by environment variable `NPM_CONFIG_REGISTRY`.
+
+If not set during building docker image npm registry is defaulted to `https://artefacts.tax.service.gov.uk/artifactory/api/npm/npmjs` which requires HMRC VPN connection.
+
+For `npm install` if global variable is not set `https://registry.npmjs.org/` registry will be used.
+
 ## Running locally
 
 * `npm install` will install the app dependencies
