@@ -8,10 +8,12 @@
 
 ## NPM registry
 NPM registry can be set by environment variable `NPM_CONFIG_REGISTRY`.
+This setting will be used for `npm install` and `npm start` commands locally.
+If global variable is not set `https://registry.npmjs.org/` registry will be used.
 
-If not set during building docker image npm registry is defaulted to `https://artefacts.tax.service.gov.uk/artifactory/api/npm/npmjs` which requires HMRC VPN connection.
+For building docker image npm registry is defaulted to `https://artefacts.tax.service.gov.uk/artifactory/api/npm/npmjs` which requires HMRC VPN connection.
+If you want to use different registry `NPM_CONFIG_REGISTRY` value will need to be updated in the Dockerfile.
 
-For `npm install` if global variable is not set `https://registry.npmjs.org/` registry will be used.
 
 ## Running locally
 
