@@ -306,6 +306,29 @@ describe('X-GOVUK Component Renderer', () => {
 }) }}`,
       },
       {
+        html: `<div class="govuk-form-group">
+  <label class="govuk-label" for="file-upload-1">
+    Upload a file
+  </label>
+  <div
+    class="govuk-drop-zone"
+    data-module="govuk-file-upload">
+  <input class="govuk-file-upload" id="file-upload-1" name="fileUpload1" type="file">
+  </div>
+</div>`,
+        name: 'file-upload/enhanced',
+        nunjucks: `{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+
+{{ govukFileUpload({
+  id: "file-upload-1",
+  name: "fileUpload1",
+  label: {
+    text: "Upload a file"
+  },
+  javascript: true
+}) }}`,
+      },
+      {
         html: `<div class="govuk-form-group govuk-form-group--error">
   <label class="govuk-label" for="file-upload-1">
     Upload a file

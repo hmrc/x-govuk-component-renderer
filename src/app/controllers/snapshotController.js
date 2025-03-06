@@ -18,6 +18,7 @@ const {
   getDependency,
   getComponentSignature,
   renderComponent,
+  excludeFromSnapshot,
 } = require('../../util');
 
 const flatten = (arr) => arr.reduce((previous, current) => previous.concat(...current), []);
@@ -55,7 +56,7 @@ router.get('/:org/:version', jsonParser, (req, res) => {
         .then((path) => getDirectories(`${path}/${srcDir}`)
           .map((componentName) => fs.readFileAsync(`${path}/${srcDir}/${componentName}/${componentName}.yaml`, 'utf8')
             .then((contents) => YAML.safeLoad(contents, { json: true }))
-            .then((componentInfo) => (componentInfo.type === 'layout' ? [] : componentInfo.examples))
+            .then((componentInfo) => ((componentInfo.type === 'layout' || excludeFromSnapshot.includes(componentName)) ? [] : componentInfo.examples))
             .catch(() => [])
             .map((example) => ({
               componentName: getComponentSignature(orgDetails.code, componentName),
