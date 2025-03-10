@@ -27,7 +27,8 @@ describe('X-GOVUK Component Renderer', () => {
       const expected = `<header class="hmrc-page-heading">
   <h1 class="govuk-heading-xl">This heading</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
 `;
-      return request(app)
+
+      request(app)
         .post('/component/hmrc/1.4.0/hmrcPageHeading')
         .send({
           text: 'This heading',
