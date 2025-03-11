@@ -210,6 +210,8 @@ const renderComponent = (orgDetails, version, component, params, nunjucksRendere
   return nunjucksRenderer.renderString(nunjucksString);
 };
 
+const excludeFromSnapshot = ['sca-account-menu'];
+
 module.exports = {
   getComponentIdentifier,
   getComponentSignature,
@@ -224,4 +226,5 @@ module.exports = {
   getConfiguredNunjucksForOrganisation,
   renderComponent,
   joinWithCurrentUrl,
+  excludeFromSnapshot,
 };
