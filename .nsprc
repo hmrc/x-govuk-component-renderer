@@ -1,4 +1,6 @@
 {
   "GHSA-wf5p-g6vw-rhxx": "axios - devDependency, no risk given our usage",
-  "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage"
+  "GHSA-jr5f-v2jv-69x6": "axios - devDependency, no risk given our usage",
+  "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage",
+  "GHSA-968p-4wvh-cqc8": "@babel/helpers - devDependency, no risk given our usage"
 }
