@@ -16,7 +16,7 @@ jest.setTimeout(10000);
 describe('X-GOVUK Component Renderer', () => {
   describe('HMRC component endpoint', () => {
     it('should return 500 and an error if the version requested is older than 1.0.0', () => request(app)
-      .post('/component/hmrc/0.1.2/hmrcPageHeading')
+      .post('/component/hmrc/0.6.4/hmrcPageHeading') // Most recent unsupported version of hmrc-frontend
       .send({ text: 'Page heading from an unsupported version' })
       .expect(500)
       .then((response) => {
@@ -25,10 +25,10 @@ describe('X-GOVUK Component Renderer', () => {
 
     it('should return a hmrc page heading', () => {
       const expected = `<header class="hmrc-page-heading">
-  <h1 class="govuk-heading-xl">This heading</h1><p class="govuk-caption-xl hmrc-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
+  <h1 class="govuk-heading-xl">This heading</h1><p class="hmrc-caption govuk-caption-xl"><span class="govuk-visually-hidden">This section is </span>That section</p></header>
 `;
       return request(app)
-        .post('/component/hmrc/1.4.0/hmrcPageHeading')
+        .post('/component/hmrc/6.0.0/hmrcPageHeading')
         .send({
           text: 'This heading',
           section: 'That section',
@@ -52,7 +52,7 @@ describe('X-GOVUK Component Renderer', () => {
     </div>
 \t</div>`;
       return request(app)
-        .post('/component/hmrc/1.12.0/hmrcCurrencyInput')
+        .post('/component/hmrc/6.0.0/hmrcCurrencyInput')
         .send({
           id: 'mpqzobgghvhv',
         })
@@ -65,7 +65,7 @@ describe('X-GOVUK Component Renderer', () => {
 
   describe('GOVUK component', () => {
     it('should return 500 and an error if the version requested is older than 3.0.0', () => request(app)
-      .post('/component/govuk/2.3.4/govukButton')
+      .post('/component/govuk/2.13.0/govukButton') // Most recent unsupported version of govuk-frontend
       .send({ text: 'Button from an unsupported version' })
       .expect(500)
       .then((response) => {
@@ -78,7 +78,7 @@ describe('X-GOVUK Component Renderer', () => {
 </button>`;
 
       return request(app)
-        .post('/component/govuk/3.0.0/govukButton')
+        .post('/component/govuk/3.0.0/govukButton') // Oldest supported version of govuk-frontend
         .send({ text: 'Button from an older version' })
         .expect(200)
         .then((response) => {
@@ -87,12 +87,12 @@ describe('X-GOVUK Component Renderer', () => {
     });
 
     it('should return a govukbutton', () => {
-      const expected = `<button class="govuk-button" data-module="govuk-button">
+      const expected = `<button type="submit" class="govuk-button" data-module="govuk-button">
   Save and continue
 </button>`;
 
       return request(app)
-        .post('/component/govuk/3.3.0/govukButton')
+        .post('/component/govuk/5.9.0/govukButton')
         .send({ text: 'Save and continue' })
         .expect(200)
         .then((response) => {
@@ -100,7 +100,7 @@ describe('X-GOVUK Component Renderer', () => {
         });
     });
 
-    it('should be able to respond to old an new versions simultaneously', () => {
+    it('should be able to respond to old and new versions simultaneously', () => {
       const input = { text: 'Button Example', isStartButton: true };
       const older = request(app)
         .post('/component/govuk/3.0.0/govukButton')
@@ -113,22 +113,20 @@ describe('X-GOVUK Component Renderer', () => {
         });
 
       const medium = request(app)
-        .post('/component/govuk/3.3.0/govukButton')
+        .post('/component/govuk/4.0.1/govukButton')
         .send(input)
         .expect(200)
         .then((response) => {
           expect(response.text.startsWith('<button class="govuk-button')).toBe(true);
-          expect(response.text.includes('role="presentation"')).toBe(true);
-          expect(response.text.includes('aria-hidden="true"')).toBe(false);
+          expect(response.text.includes('aria-hidden="true"')).toBe(true);
         });
 
       const newer = request(app)
-        .post('/component/govuk/3.6.0/govukButton')
+        .post('/component/govuk/5.9.0/govukButton')
         .send(input)
         .expect(200)
         .then((response) => {
-          expect(response.text.startsWith('<button class="govuk-button')).toBe(true);
-          expect(response.text.includes('role="presentation"')).toBe(false);
+          expect(response.text.startsWith('<button type="submit" class="govuk-button')).toBe(true);
           expect(response.text.includes('aria-hidden="true"')).toBe(true);
         });
 
@@ -136,12 +134,12 @@ describe('X-GOVUK Component Renderer', () => {
     });
 
     it('should return the text I provided', () => {
-      const expected = `<button class="govuk-button" data-module="govuk-button">
+      const expected = `<button type="submit" class="govuk-button" data-module="govuk-button">
   I Waz &#39;ere
 </button>`;
 
       return request(app)
-        .post('/component/govuk/3.3.0/govukButton')
+        .post('/component/govuk/5.9.0/govukButton')
         .send({ text: "I Waz 'ere" })
         .expect(200)
         .then((response) => {
@@ -157,19 +155,19 @@ describe('X-GOVUK Component Renderer', () => {
       When was your passport issued?
     </h1>
   </legend>
-  <span id="passport-issued-hint" class="govuk-hint">
+  <div id="passport-issued-hint" class="govuk-hint">
     For example, 12 11 2007
-  </span>
-  <span id="passport-issued-error" class="govuk-error-message">
+  </div>
+  <p id="passport-issued-error" class="govuk-error-message">
     <span class="govuk-visually-hidden">Error:</span> The date your passport was issued must be in the past
-  </span>
+  </p>
   <div class="govuk-date-input" id="passport-issued">
     <div class="govuk-date-input__item">
       <div class="govuk-form-group">
         <label class="govuk-label govuk-date-input__label" for="passport-issued-day">
           Day
         </label>
-        <input class="govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--error" id="passport-issued-day" name="passport-issued-day" type="number" value="6" pattern="[0-9]*">
+        <input class="govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--error" id="passport-issued-day" name="passport-issued-day" type="text" value="6" inputmode="numeric">
       </div>
     </div>
     <div class="govuk-date-input__item">
@@ -177,7 +175,7 @@ describe('X-GOVUK Component Renderer', () => {
         <label class="govuk-label govuk-date-input__label" for="passport-issued-month">
           Month
         </label>
-        <input class="govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--error" id="passport-issued-month" name="passport-issued-month" type="number" value="3" pattern="[0-9]*">
+        <input class="govuk-input govuk-date-input__input govuk-input--width-2 govuk-input--error" id="passport-issued-month" name="passport-issued-month" type="text" value="3" inputmode="numeric">
       </div>
     </div>
     <div class="govuk-date-input__item">
@@ -185,7 +183,7 @@ describe('X-GOVUK Component Renderer', () => {
         <label class="govuk-label govuk-date-input__label" for="passport-issued-year">
           Year
         </label>
-        <input class="govuk-input govuk-date-input__input govuk-input--width-4 govuk-input--error" id="passport-issued-year" name="passport-issued-year" type="number" value="2076" pattern="[0-9]*">
+        <input class="govuk-input govuk-date-input__input govuk-input--width-4 govuk-input--error" id="passport-issued-year" name="passport-issued-year" type="text" value="2076" inputmode="numeric">
       </div>
     </div>
   </div>
@@ -193,7 +191,7 @@ describe('X-GOVUK Component Renderer', () => {
 </div>`;
 
       return request(app)
-        .post('/component/govuk/3.3.0/govukDateInput')
+        .post('/component/govuk/5.9.0/govukDateInput')
         .send({
           fieldset: {
             legend: {
@@ -235,18 +233,18 @@ describe('X-GOVUK Component Renderer', () => {
     });
 
     it('should render without parameters when none are provided', () => {
-      const expected = `<footer class="govuk-footer " role="contentinfo">
-  <div class="govuk-width-container ">
+      const expected = `<footer class="govuk-footer">
+  <div class="govuk-width-container">
 
     <div class="govuk-footer__meta">
       <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
 
         <svg
-            role="presentation"
+            aria-hidden="true"
             focusable="false"
             class="govuk-footer__licence-logo"
             xmlns="http://www.w3.org/2000/svg"
-            viewbox="0 0 483.2 195.7"
+            viewBox="0 0 483.2 195.7"
             height="17"
             width="41"
         >
@@ -268,7 +266,9 @@ describe('X-GOVUK Component Renderer', () => {
         <a
             class="govuk-footer__link govuk-footer__copyright-logo"
             href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
-        >© Crown copyright</a>
+        >
+        © Crown copyright
+        </a>
       </div>
     </div>
   </div>
@@ -276,7 +276,7 @@ describe('X-GOVUK Component Renderer', () => {
 `;
 
       return request(app)
-        .post('/component/govuk/3.3.0/govukFooter')
+        .post('/component/govuk/5.9.0/govukFooter')
         .send()
         .expect(200)
         .then((response) => {
@@ -444,7 +444,7 @@ describe('X-GOVUK Component Renderer', () => {
 
   describe('GOVUK template', () => {
     it('should return 500 and an error if the version requested is older than 3.0.0', () => request(app)
-      .post('/template/govuk/2.3.4/default')
+      .post('/template/govuk/2.13.0/default')
       .send({})
       .expect(500)
       .then((response) => {
@@ -452,7 +452,7 @@ describe('X-GOVUK Component Renderer', () => {
       }));
 
     it('should reject unknown templates', () => request(app)
-      .post('/template/govuk/3.6.0/some-template')
+      .post('/template/govuk/5.9.0/some-template')
       .send({})
       .expect(400)
       .then((response) => {
@@ -460,7 +460,7 @@ describe('X-GOVUK Component Renderer', () => {
       }));
 
     it('should render govuk template with blocks and variables', () => request(app)
-      .post('/template/govuk/3.6.0/default')
+      .post('/template/govuk/5.9.0/default')
       .send({
         variables: {
           htmlLang: 'abc',
@@ -491,17 +491,10 @@ describe('X-GOVUK Component Renderer', () => {
 \t<title>This is the title</title>
 \t<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 \t<meta name="theme-color" content="#0b0c0c">
-
-\t<meta http-equiv="X-UA-Compatible" content="IE=edge">
-
 \theadIcons
-
-
-\t<meta property="og:image" content="/ghi/jkl/images/govuk-opengraph-image.png">
 </head>
-
-<body class="govuk-template__body " one="1" data-two="this-is two">
-\t<script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+<body class="govuk-template__body" one="1" data-two="this-is two">
+\t<script>document.body.className += ' js-enabled' + ('noModule' in HTMLScriptElement.prototype ? ' govuk-frontend-supported' : '');</script>
 
 \tskipLink
 \tthe header
@@ -568,26 +561,41 @@ describe('X-GOVUK Component Renderer', () => {
 
   describe('snapshotter', () => {
     it('should return a snapshot from a recent GOVUK version', () => request(app)
-      .get('/snapshot/govuk/3.6.0')
+      .get('/snapshot/govuk/5.9.0')
       .expect(200)
       .then((response) => {
-        expect(response.body.length).toBe(188);
+        expect(response.body.length).toBe(681);
         expect(response.body.map((x) => x.exampleId).filter((x) => x.startsWith('footer-'))).toEqual([
           'footer-default',
+          'footer-with-custom-HTML-content-licence-and-copyright-notice',
+          'footer-with-custom-text-content-licence-and-copyright-notice',
           'footer-with-meta',
           'footer-with-custom-meta',
           'footer-with-meta-links-and-meta-content',
           'footer-with-custom-meta2',
+          'footer-with-default-width-navigation-(one-column)',
+          'footer-with-default-width-navigation-(two-columns)',
           'footer-with-navigation',
-          'footer-GOV.UK',
+          'footer-Full-GDS-example',
           'footer-Three-equal-columns',
+          'footer-attributes',
+          'footer-classes',
+          'footer-with-container-classes',
+          'footer-with-HTML-passed-as-text-content',
+          'footer-with-empty-meta',
+          'footer-with-empty-meta-items',
+          'footer-meta-html-as-text',
+          'footer-with-meta-html',
+          'footer-with-meta-item-attributes',
+          'footer-with-empty-navigation',
+          'footer-with-navigation-item-attributes',
         ]);
       }));
     it('should return a snapshot from a recent HMRC version', () => request(app)
-      .get('/snapshot/hmrc/1.12.0')
+      .get('/snapshot/hmrc/6.64.0')
       .expect(200)
       .then((response) => {
-        expect(response.body.length).toBe(42);
+        expect(response.body.length).toBe(160);
         expect(response.body.map((x) => x.exampleId).filter((x) => x.startsWith('currency-'))).toEqual([
           'currency-input-default',
         ]);
@@ -601,7 +609,7 @@ describe('X-GOVUK Component Renderer', () => {
       }));
     it('should render using the correct govuk-frontend version', () => Promise.all([
       request(app)
-        .get('/snapshot/govuk/3.6.0')
+        .get('/snapshot/govuk/5.9.0')
         .expect(200)
         .then((response) => {
           const { output } = response.body.filter((x) => x.exampleId === 'button-start-link')[0];
@@ -617,7 +625,7 @@ describe('X-GOVUK Component Renderer', () => {
           expect(output.includes('aria-hidden="true"')).toBe(false);
         }),
       request(app)
-        .get('/snapshot/govuk/5.0.0-beta.1') // TODO this should be updated to the 5.0.0 release version when available
+        .get('/snapshot/govuk/5.1.0')
         .expect(200)
         .then((response) => {
           const { output } = response.body.filter((x) => x.exampleId === 'button-start-link')[0];
