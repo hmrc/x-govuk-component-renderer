@@ -170,7 +170,8 @@ const loadJsonFile = (filePath) => fs.readFileAsync(filePath).then(JSON.parse);
 
 const getSubDependencies = (dependencyPath, dependencies) => Promise.all(
   dependencies.map((dependency) => loadJsonFile(`${dependencyPath}/package.json`).then((packageContents) => {
-    const version = packageContents.dependencies[dependency];
+    // eslint-disable-next-line max-len
+    const version = packageContents.dependencies[dependency] || packageContents.devDependencies[dependency];
     const trimmedVersion = version
       .replace('v', '')
       .replace('^', '')
