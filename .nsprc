@@ -3,5 +3,6 @@
   "GHSA-jr5f-v2jv-69x6": "axios - devDependency, no risk given our usage",
   "GHSA-c2qf-rxjj-qqgw": "semver - devDependency, no risk given our usage",
   "GHSA-968p-4wvh-cqc8": "@babel/helpers - devDependency, no risk given our usage",
-  "GHSA-v6h2-p8h4-qcjw": "brace-expansion - devDependency, no risk given our usage"
+  "GHSA-v6h2-p8h4-qcjw": "brace-expansion - devDependency, no risk given our usage",
+  "GHSA-fjxv-7rqg-78g4": "form-data: devDependency, no risk given our usage"
 }
