@@ -55,7 +55,7 @@ router.get('/:org/:version', jsonParser, (req, res) => {
       getDependency(`${orgDetails.label}-github`, orgDetails.githubUrl, version)
         .then((path) => getDirectories(`${path}/${srcDir}`)
           .map((componentName) => fs.readFileAsync(`${path}/${srcDir}/${componentName}/${componentName}.yaml`, 'utf8')
-            .then((contents) => YAML.safeLoad(contents, { json: true }))
+            .then((contents) => YAML.load(contents, { json: true }))
             .then((componentInfo) => ((componentInfo.type === 'layout' || excludeFromSnapshot.includes(componentName)) ? [] : componentInfo.examples))
             .catch(() => [])
             .map((example) => ({
@@ -68,8 +68,13 @@ router.get('/:org/:version', jsonParser, (req, res) => {
     ])
       .spread((configuredNunjucks, examples) => examples.map((example) => ({
         ...example,
-        output: renderComponent(orgDetails, version,
-          example.componentName, example.input, configuredNunjucks),
+        output: renderComponent(
+          orgDetails,
+          version,
+          example.componentName,
+          example.input,
+          configuredNunjucks,
+        ),
       })))
       .then((out) => res.send(out))
       .catch(respondWithError(res));
