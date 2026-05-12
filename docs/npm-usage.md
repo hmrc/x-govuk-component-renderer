@@ -4,7 +4,6 @@ Where possible, we try to minimise the amount of npm packages we depend on. The 
 
 | Dependency Name       | Purpose                                                                                        | Extra resources                                    |
 |-----------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| axios                 | Axios is a simple promise based HTTP client for the browser and node.js.                       | https://axios-http.com/                            |
 | better-npm-audit      | Provides a clearer npm audit                                                                   | https://www.npmjs.com/package/better-npm-audit     |
 | bluebird              | Bluebird is a fully featured promise library with focus on innovative features and performance | https://www.npmjs.com/package/bluebird             |
 | body-parser           | Node.js body parsing middleware.                                                               | https://www.npmjs.com/package/body-parser          |

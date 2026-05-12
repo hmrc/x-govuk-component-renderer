@@ -1,5 +1,4 @@
 const matter = require('gray-matter');
-const axios = require('axios');
 const http = require('https');
 const tar = require('tar');
 const Promise = require('bluebird');
@@ -84,15 +83,29 @@ const getLatestSha = (() => {
       delete cache[key];
     }, fifteenMinutesInMillis);
   };
+  const getJson = async (url, options) => {
+    const requestOptions = {
+      headers: {
+        'User-Agent': 'x-govuk-component-renderer',
+        // This approach guards against undefined options
+        ...(options && options.headers ? options.headers : {}),
+      },
+    };
+    const response = await fetch(url, requestOptions);
+    if (!response.ok) {
+      throw new Error(`Failed to load ${url} - returned status code ${response.status}`);
+    }
+    return response.json();
+  };
   return async (repo, branch = 'main') => {
     const cacheKey = getCacheKey(repo, branch);
     if (cache[cacheKey]) {
       return cache[cacheKey];
     }
     const token = process.env.TOKEN;
-    const headers = token ? { headers: { Authorization: `token ${token}` } } : undefined;
+    const options = token ? { headers: { Authorization: `token ${token}` } } : undefined;
     const url = `https://api.github.com/repos/${repo}/commits/${branch}`;
-    const { data: { sha } } = await axios.get(url, headers);
+    const { sha } = await getJson(url, options);
     addToCache(cacheKey, sha);
     return sha;
   };

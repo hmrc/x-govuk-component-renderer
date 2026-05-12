@@ -1,3 +1,4 @@
 {
-  "GHSA-r4q5-vmmm-2653": "follow-redirects leaks Custom Authentication Headers: devDependency only, no risk given our usage"
+  "GHSA-q3j6-qgpj-74h6": "fast-uri vulnerable to path traversal: pulled in via eslint, no risk given our usage",
+  "GHSA-v39h-62p7-jpjc": "fast-uri vulnerable to host confusion: pulled in via eslint, no risk given our usage"
 }
