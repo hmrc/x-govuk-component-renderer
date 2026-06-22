@@ -2,5 +2,9 @@
   "GHSA-q3j6-qgpj-74h6": "fast-uri vulnerable to path traversal: pulled in via eslint, no risk given our usage",
   "GHSA-v39h-62p7-jpjc": "fast-uri vulnerable to host confusion: pulled in via eslint, no risk given our usage",
   "GHSA-q8mj-m7cp-5q26": "qs.stringify remotely triggerable DoS with TypeError on null/undefined entries in comma-format arrays: pulled in via devDependency, no risk given our usage",
-  "GHSA-jxxr-4gwj-5jf2": "brace-expansion large numeric range defeats documented `max` DoS protection: devDependency only, no risk given our usage"
+  "GHSA-jxxr-4gwj-5jf2": "brace-expansion large numeric range defeats documented `max` DoS protection: devDependency only, no risk given our usage",
+  "GHSA-h67p-54hq-rp68": "js-yaml quadratic-complexity DoS in merge key: pulled in via devDependency, no risk given our usage",
+  "GHSA-hmw2-7cc7-3qxx": "form-data: CRLF injection in form-data via unescaped multipart field names: pulled in via devDependency, no risk given our usage",
+  "GHSA-4x5r-pxfx-6jf8": "babel/core: arbitrary file read via sourceMappingURL comment: devDependency only, no risk given our usage",
+  "GHSA-vmf3-w455-68vh": "node-tar applies PAX size override: pulled in via devDependency, no risk given our usage"
 }
