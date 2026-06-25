@@ -311,8 +311,9 @@ describe('X-GOVUK Component Renderer', () => {
     Upload a file
   </label>
   <div
-    class="govuk-drop-zone"
-    data-module="govuk-file-upload">
+    class="govuk-file-upload-wrapper"
+    data-module="govuk-file-upload"
+  >
   <input class="govuk-file-upload" id="file-upload-1" name="fileUpload1" type="file">
   </div>
 </div>`,
