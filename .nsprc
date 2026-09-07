@@ -2,5 +2,12 @@
   "GHSA-3jxr-9vmj-r5cp": "brace-expansion: devDependency, no risk given our usage",
   "GHSA-mh99-v99m-4gvg": "brace-expansion: devDependency, no risk given our usage",
   "GHSA-rgw5-rvv9-x895": "brace-expansion: devDependency, no risk given our usage",
-  "GHSA-5p4m-2wfm-xmqj": "js-yaml: Quadratic CPU consumption in !!omap resolution: pulled in via devDependency, no risk given our usage"
+  "GHSA-5p4m-2wfm-xmqj": "js-yaml: Quadratic CPU consumption in !!omap resolution: pulled in via devDependency, no risk given our usage",
+  "GHSA-7p8r-x3mc-p8w7": "fast-uri: devDependency only, pulled in via eslint, no risk given our usage",
+  "GHSA-5jgf-p345-68v8": "fast-uri: devDependency only, pulled in via eslint, no risk given our usage",
+  "GHSA-f65p-4m7j-42xc": "fast-uri: devDependency only, pulled in via eslint, no risk given our usage",
+  "GHSA-fph4-wmhf-6fwf": "fast-uri: devDependency only, pulled in via eslint, no risk given our usage",
+  "GHSA-jqff-g426-hqxp": "fast-uri: devDependency only, pulled in via eslint, no risk given our usage",
+  "GHSA-x5fp-wj9c-mxmx": "qs: devDependency only, no risk given our usage",
+  "GHSA-4mjr-xmp4-gh2g": "qs: devDependency only, no risk given our usage"
 }
