@@ -18,12 +18,5 @@ Everything in devDependencies is for local development and testing purposes only
 
 | Dependency Name           | Purpose                                                                         | Extra resources                                         |
 |---------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------|
-| @babel/eslint-parser      | @babel/eslint-parser allows you to lint ALL valid Babel code with the ESLint    | https://www.npmjs.com/package/@babel/eslint-parser      |
-| eslint                    | Linting tool that identifies and reports on ECMACode/JavaScript                 | https://eslint.org/                                     |
-| eslint-config-airbnb-base | This package provides Airbnb's base JS .eslintrc as an extensible shared config | https://www.npmjs.com/package/eslint-config-airbnb-base |
-| eslint-plugin-import      | Supports linting of ES6+ import/export syntax                                   | https://www.npmjs.com/package/eslint-plugin-import      |
-| eslint-plugin-jest        | ESLint plugin for Jest                                                          | https://www.npmjs.com/package/eslint-plugin-jest        |
-| husky                     | Lints commit messages, code and run tests on commit/push                        | https://typicode.github.io/husky/                       |
 | jest                      | JavaScript Testing Framework                                                    | https://jestjs.io/                                      |
-| nodemon                   | nodemon is a tool that automatically restart the application when file changes  | https://nodemon.io/                                     |
 | supertest                 | supertest provides a high-level abstraction for testing HTTP                    | https://www.npmjs.com/package/supertest                 |

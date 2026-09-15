@@ -43,11 +43,8 @@ router.post('/:org/:version/:template', jsonParser, async (req, res) => {
     try {
       res.send(nunjucks(nunjucksPaths).renderString(nunjucksString));
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err.message);
-      // eslint-disable-next-line no-console
       console.error(err.stack);
-      // eslint-disable-next-line no-console
       console.info('template was:', nunjucksString);
       res.status(500).send(`An error occurred: ${err.message}`);
     }
