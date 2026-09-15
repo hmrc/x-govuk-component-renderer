@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node server.js",
     "test": "jest --forceExit",
-    "dev": "nodemon server.js --ignore 'src/dependencies/**/*'",
     "audit": "npm outdated; better-npm-audit audit"
   },
   "author": "",
@@ -23,9 +22,7 @@
     "tar": "^7.5.21"
   },
   "devDependencies": {
-    "husky": "^9.1.7",
     "jest": "^30.5.1",
-    "nodemon": "^3.1.10",
     "supertest": "^7.2.2"
   },
   "bin": {

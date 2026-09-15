@@ -18,7 +18,5 @@ Everything in devDependencies is for local development and testing purposes only
 
 | Dependency Name           | Purpose                                                                         | Extra resources                                         |
 |---------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------|
-| husky                     | Lints commit messages, code and run tests on commit/push                        | https://typicode.github.io/husky/                       |
 | jest                      | JavaScript Testing Framework                                                    | https://jestjs.io/                                      |
-| nodemon                   | nodemon is a tool that automatically restart the application when file changes  | https://nodemon.io/                                     |
 | supertest                 | supertest provides a high-level abstraction for testing HTTP                    | https://www.npmjs.com/package/supertest                 |
