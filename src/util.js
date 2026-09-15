@@ -49,7 +49,6 @@ const getDependency = (name, remote, version) => {
                 .catch((err) => reject(err));
             }
             const message = `Failed to load ${remote} status code was ${statusCode}`;
-            // eslint-disable-next-line no-console
             console.error(message);
             return reject(new Error(message));
           });
@@ -183,7 +182,6 @@ const loadJsonFile = (filePath) => fs.readFileAsync(filePath).then(JSON.parse);
 
 const getSubDependencies = (dependencyPath, dependencies) => Promise.all(
   dependencies.map((dependency) => loadJsonFile(`${dependencyPath}/package.json`).then((packageContents) => {
-    // eslint-disable-next-line max-len
     const version = packageContents.dependencies[dependency] || packageContents.devDependencies[dependency];
     const trimmedVersion = version
       .replace('v', '')
@@ -195,13 +193,10 @@ const getSubDependencies = (dependencyPath, dependencies) => Promise.all(
 
 const respondWithError = (res) => (err) => {
   if (err) {
-    // eslint-disable-next-line no-console
     console.error(err.message);
-    // eslint-disable-next-line no-console
     console.error(err.stack);
     res.status(500).send(err);
   } else {
-    // eslint-disable-next-line no-console
     console.error('failed but no error provided');
     res.status(500).send('An error occurred');
   }

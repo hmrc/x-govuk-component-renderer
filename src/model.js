@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 const majorVersion = (v) => parseInt(v.split('.')[0], 10);
 
 const versionIsCompatible = (version, org) => majorVersion(version) >= org.minimumSupported;
