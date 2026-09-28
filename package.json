@@ -22,7 +22,7 @@
     "tar": "^7.5.21"
   },
   "devDependencies": {
-    "jest": "^30.5.1",
+    "jest": "^30.5.2",
     "supertest": "^7.2.2"
   },
   "bin": {
