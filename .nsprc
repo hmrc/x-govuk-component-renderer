@@ -1,3 +1,5 @@
 {
-  "GHSA-hrr3-gc8f-f4qj": "fast-uri: pulled in via npm-better-audit, no risk given our usage"
+  "GHSA-hrr3-gc8f-f4qj": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
+  "GHSA-jqcg-44mw-7w3h": "proxy-addr: pulled in via express, no risk given our usage",
+  "GHSA-hp3w-g68c-fv3c": "sprintf-js: no risk given our usage"
 }
