@@ -49,9 +49,7 @@ router.get('/:org', (req, res) => {
   const { componentRootPath, name, branch } = orgs[req.params.org];
   getLatestExamples(name, branch)
     .then((examplePath) => getDirectories(`${examplePath}/${componentRootPath}`))
-    .then((dirs) => {
-      res.send(dirs.map((dir) => joinWithCurrentUrl(req, dir)));
-    })
+    .then((dirs) => res.send(dirs.map((dir) => joinWithCurrentUrl(req, dir))))
     .catch(respondWithError(res));
 });
 
@@ -74,18 +72,21 @@ router.get('/:org/:component', (req, res) => {
       const componentPath = `${paths.dependencyPath}/${componentRootPath}/${substitutionMap[componentIdentifier] || componentIdentifier}`;
 
       return getDirectories(componentPath)
-        .map((example) => getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subDependencyPaths).catch((err) => {
-          const preparedMessage = `This example couldn't be prepared - ${err.message}`;
-          return {
-            html: preparedMessage,
-            nunjucks: preparedMessage,
-          };
-        })
-          .then((htmlAndNunjucks) => ({ name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks })));
+        .then((directories) => Promise.all(
+          directories.map((example) =>
+            getDataFromFile(`${componentPath}/${example}/index.njk`, paths.subDependencyPaths)
+              .catch((err) => {
+                const preparedMessage = `This example couldn't be prepared - ${err.message}`;
+                return {
+                  html: preparedMessage,
+                  nunjucks: preparedMessage,
+                };
+              })
+              .then((htmlAndNunjucks) => ({ name: `${componentIdentifier}/${example}`, ...htmlAndNunjucks })),
+          ),
+        ));
     })
-    .then((result) => {
-      res.send(result);
-    })
+    .then((result) => res.send(result))
     .catch(respondWithError(res));
 });
 

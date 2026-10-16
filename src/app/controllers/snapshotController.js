@@ -1,8 +1,9 @@
 const express = require('express');
-const Promise = require('bluebird');
 const YAML = require('js-yaml');
+const { promisify } = require('util');
 
-const fs = Promise.promisifyAll(require('fs'));
+const fs = require('fs');
+const readFileAsync = promisify(fs.readFile);
 
 const bodyParser = require('body-parser');
 
@@ -53,20 +54,26 @@ router.get('/:org/:version', jsonParser, (req, res) => {
     Promise.all([
       getConfiguredNunjucksForOrganisation(orgDetails, version),
       getDependency(`${orgDetails.label}-github`, orgDetails.githubUrl, version)
-        .then((path) => getDirectories(`${path}/${srcDir}`)
-          .map((componentName) => fs.readFileAsync(`${path}/${srcDir}/${componentName}/${componentName}.yaml`, 'utf8')
-            .then((contents) => YAML.load(contents, { json: true }))
-            .then((componentInfo) => ((componentInfo.type === 'layout' || excludeFromSnapshot.includes(componentName)) ? [] : componentInfo.examples))
-            .catch(() => [])
-            .map((example) => ({
-              componentName: getComponentSignature(orgDetails.code, componentName),
-              exampleName: example.name,
-              exampleId: ensureUniqueName(`${componentName}-${example.name}`.replace(/\s/g, '-')),
-              input: exampleData(example),
-            })))
-          .then(flatten)),
+        .then((path) => {
+          return getDirectories(`${path}/${srcDir}`)
+            .then((directories) => Promise.all(
+              directories.map((componentName) =>
+                readFileAsync(`${path}/${srcDir}/${componentName}/${componentName}.yaml`, 'utf8')
+                  .then((contents) => YAML.load(contents, { json: true }))
+                  .then((componentInfo) => (componentInfo.type === 'layout' || excludeFromSnapshot.includes(componentName)) ? [] : componentInfo.examples)
+                  .catch(() => [])
+                  .then((examples) => examples.map((example) => ({
+                    componentName: getComponentSignature(orgDetails.code, componentName),
+                    exampleName: example.name,
+                    exampleId: ensureUniqueName(`${componentName}-${example.name}`.replace(/\s/g, '-')),
+                    input: exampleData(example),
+                  })))
+              )
+            ))
+            .then(flatten);
+        }),
     ])
-      .spread((configuredNunjucks, examples) => examples.map((example) => ({
+      .then(([configuredNunjucks, examples]) => examples.map((example) => ({
         ...example,
         output: renderComponent(
           orgDetails,

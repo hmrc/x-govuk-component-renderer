@@ -1,17 +1,21 @@
 const matter = require('gray-matter');
 const http = require('https');
 const tar = require('tar');
-const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
+const fs = require('fs');
+const { promisify } = require('util');
+
+const readFileAsync = promisify(fs.readFile);
+const readdirAsync = promisify(fs.readdir);
+const mkdirAsync = (path, options) => fs.promises.mkdir(path, options);
 
 const nunjucks = require('./lib/nunjucks');
 
 const { pathFromRoot } = require('./app/constants');
 const { OrgDetails, VersionSpecifics } = require('./model');
 
-const mkdir = (path) => fs.mkdirAsync(path, { recursive: true });
+const mkdir = (path) => mkdirAsync(path, { recursive: true });
 
-const dirExistsAndNotEmpty = (path) => fs.readdirAsync(path)
+const dirExistsAndNotEmpty = (path) => readdirAsync(path)
   .then((contents) => contents.length > 0)
   .catch((err) => {
     if (err.code === 'ENOENT') {
@@ -59,7 +63,7 @@ const getDependency = (name, remote, version) => {
 const getComponentIdentifier = (org, component) => component.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`).replace('govuk-', '').replace('hmrc-', '');
 const getComponentSignature = (org, component) => org + component.replace(/^[a-z]/, (g) => `${g[0].toUpperCase()}`).replace(/(-[a-z])/g, (g) => `${g[1].toUpperCase()}`);
 
-const getDirectories = (source) => fs.readdirAsync(source, { withFileTypes: true })
+const getDirectories = (source) => readdirAsync(source, { withFileTypes: true })
   .then((files) => files
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name));
@@ -168,7 +172,7 @@ const addDistributionPaths = (paths) => {
   return [...paths, ...distributionPaths];
 };
 
-const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then((contents) => {
+const getDataFromFile = (file, paths) => readFileAsync(file, 'utf8').then((contents) => {
   const nj = matter(contents).content;
   const allPaths = addDistributionPaths(paths);
   const html = nunjucks(allPaths).renderString(nj).trim();
@@ -178,7 +182,7 @@ const getDataFromFile = (file, paths) => fs.readFileAsync(file, 'utf8').then((co
   };
 });
 
-const loadJsonFile = (filePath) => fs.readFileAsync(filePath).then(JSON.parse);
+const loadJsonFile = (filePath) => readFileAsync(filePath).then(JSON.parse);
 
 const getSubDependencies = (dependencyPath, dependencies) => Promise.all(
   dependencies.map((dependency) => loadJsonFile(`${dependencyPath}/package.json`).then((packageContents) => {
