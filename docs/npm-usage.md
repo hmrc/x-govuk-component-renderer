@@ -5,7 +5,6 @@ Where possible, we try to minimise the amount of npm packages we depend on. The 
 | Dependency Name       | Purpose                                                                                        | Extra resources                                    |
 |-----------------------|------------------------------------------------------------------------------------------------|----------------------------------------------------|
 | better-npm-audit      | Provides a clearer npm audit                                                                   | https://www.npmjs.com/package/better-npm-audit     |
-| bluebird              | Bluebird is a fully featured promise library with focus on innovative features and performance | https://www.npmjs.com/package/bluebird             |
 | body-parser           | Node.js body parsing middleware.                                                               | https://www.npmjs.com/package/body-parser          |
 | express               | Web framework for node.js                                                                      | https://www.npmjs.com/package/express              |
 | gray-matter           | YAML, JSON parser from string or file                                                          | https://www.npmjs.com/package/gray-matter          |
