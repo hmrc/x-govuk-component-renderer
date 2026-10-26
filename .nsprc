@@ -1,5 +1,8 @@
 {
+  "GHSA-27r3-jxmh-p828": "body-parser: devDependency, no risk given our usage",
   "GHSA-hrr3-gc8f-f4qj": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
-  "GHSA-jqcg-44mw-7w3h": "proxy-addr: pulled in via express, no risk given our usage",
-  "GHSA-hp3w-g68c-fv3c": "sprintf-js: no risk given our usage"
+  "GHSA-w74x-v6f9-j3xg": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
+  "GHSA-xhq7-xmqj-769h": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
+  "GHSA-wjr9-j795-jxcr": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
+  "GHSA-333x-w4r6-6crp": "fast-uri: pulled in via npm-better-audit, no risk given our usage"
 }
