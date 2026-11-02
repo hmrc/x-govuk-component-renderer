@@ -1,8 +1,10 @@
 {
-  "GHSA-27r3-jxmh-p828": "body-parser: devDependency, no risk given our usage",
+  "GHSA-gcqx-w48m-w2h4": "deepmerge: devDependency only, no risk given our usage",
   "GHSA-hrr3-gc8f-f4qj": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
   "GHSA-w74x-v6f9-j3xg": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
   "GHSA-xhq7-xmqj-769h": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
   "GHSA-wjr9-j795-jxcr": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
-  "GHSA-333x-w4r6-6crp": "fast-uri: pulled in via npm-better-audit, no risk given our usage"
+  "GHSA-333x-w4r6-6crp": "fast-uri: pulled in via npm-better-audit, no risk given our usage",
+  "GHSA-3g3m-2fjr-6pw4": "glob: devDependency only, no risk given our usage (only in tests)",
+  "GHSA-g3hv-75wg-m249": "minimatch: devDependency only, no risk given our usage (only in tests)"
 }
